@@ -270,13 +270,12 @@ export default function App() {
                     placeholder="Виберіть знижку"
                     options={discountOption}
                     onChange={(v) => setActiveDiscount(v || 0)}
-                    style={{width: isMobile ? 140 : 200}}
+                    style={{width: "100%"}}
                     size={isMobile ? "middle" : "large"}
                     value={activeDiscount || undefined}
                 />
 
                 <Flex align="center" gap={6} style={{flexWrap: "wrap"}}>
-                    <Text type="secondary">Курс:</Text>
                     <Flex align="center" gap={4}>
                         <Text>USD</Text>
                         <InputNumber
