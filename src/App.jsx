@@ -328,7 +328,8 @@ export default function App() {
                 sticky
                 pagination={{
                     size: isMobile ? "small" : "default",
-                    pageSize: isMobile ? 10 : 20,
+                    // pageSize: isMobile ? 10 : 20,
+                    pageSize: 10000,
                     showSizeChanger: !isMobile,
                 }}
                 style={{width: "100%", fontSize: 14}}
