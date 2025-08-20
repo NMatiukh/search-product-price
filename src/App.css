@@ -89,3 +89,11 @@
 .ant-table-tbody > tr > td {
     font-size: 12px !important;
 }
+
+td {
+    font-size: 12px !important;
+}
+
+table {
+    font-size: 12px !important;
+}
