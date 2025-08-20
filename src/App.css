@@ -70,14 +70,22 @@
 /*.ant-table-thead > tr > th, td {*/
 /*    font-size: 12px !important;*/
 /*}*/
-.ant-table.ant-table-small {
+.ant-table.ant-table-small > td {
     font-size: 12px !important;
 }
 
-.ant-table-wrapper {
+.ant-table-wrapper > td {
     font-size: 12px !important;
 }
 
-.ant-table-cell {
+.ant-table-cell > td {
+    font-size: 12px !important;
+}
+
+.ant-table-thead > tr > th {
+    font-size: 12px !important;
+}
+
+.ant-table-tbody > tr > td {
     font-size: 12px !important;
 }
