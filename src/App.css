@@ -66,6 +66,35 @@
         font-size: 12px !important;
     }
 }
+/* iOS/Chrome iOS: не зумить інпут при фокусі */
+@media (max-width: 768px) {
+  .ant-input,
+  .ant-input-affix-wrapper,
+  .ant-input-affix-wrapper input,
+  .ant-select-selector,
+  .ant-select-selection-item,
+  .ant-select-selection-placeholder,
+  .ant-select-selection-search-input,
+  .ant-input-number,
+  .ant-input-number-input {
+    font-size: 12px !important;
+  }
+}
+/* Заборонити автоінфляцію шрифту в таблиці на мобайл */
+.ant-table-wrapper {
+  -webkit-text-size-adjust: none;
+  text-size-adjust: none;
+}
+
+/* Зафіксувати 12px в antd-таблиці */
+.ant-table-wrapper .ant-table {
+  font-size: 12px;              /* базовий розмір */
+  line-height: 1.4;
+}
+.ant-table-wrapper .ant-table-thead > tr > th,
+.ant-table-wrapper .ant-table-tbody > tr > td {
+  font-size: inherit;           /* успадковує 12px */
+}
 
 /*.ant-table-thead > tr > th, td {*/
 /*    font-size: 12px !important;*/
