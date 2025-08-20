@@ -107,9 +107,11 @@ function findArrayOfObjects(anyJson) {
 function mapProduct(item, idx) {
     const toBool = (v) => v === "1" || v === 1 || v === true || String(v).trim() === "1";
     const toNum = (v) => {
-        const n = Number(v);
+        const s = String(v ?? "").replace(",", ".").replace(/\s+/g, "");
+        const n = Number(s);
         return Number.isFinite(n) ? n : 0;
     };
+
 
     return {
         key: idx,
@@ -122,10 +124,12 @@ function mapProduct(item, idx) {
         Price: toNum(item.Price),
         PriceCurrency: item.PriceCurrency ?? "",
         ManufacturerName: item.ManufacturerName ?? "",
+        WhPrice: toNum(item.WhPrice),
     };
 }
+
 // ======== SEARCH UTILS ========
-const FIELD_WEIGHTS = { name: 3, barcode: 4, code: 2, maker: 1 };
+const FIELD_WEIGHTS = {name: 3, barcode: 4, code: 2, maker: 1};
 
 const normalize = (s) =>
     String(s ?? "")
@@ -137,12 +141,14 @@ const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 // простий Levenshtein (вистачає для 7к рядків)
 function dist(a, b) {
-    a = normalize(a); b = normalize(b);
+    a = normalize(a);
+    b = normalize(b);
     const m = a.length, n = b.length;
     if (!m || !n) return m || n;
-    const dp = Array.from({ length: n + 1 }, (_, j) => j);
+    const dp = Array.from({length: n + 1}, (_, j) => j);
     for (let i = 1; i <= m; i++) {
-        let prev = dp[0]; dp[0] = i;
+        let prev = dp[0];
+        dp[0] = i;
         for (let j = 1; j <= n; j++) {
             const tmp = dp[j];
             dp[j] = a[i - 1] === b[j - 1]
@@ -240,9 +246,9 @@ export default function App() {
     );
 
 // основний пошук + сортування
-    const { results, highlightTokens } = useMemo(() => {
+    const {results, highlightTokens} = useMemo(() => {
         const q = String(searchValue || "").trim();
-        if (!q) return { results: rows, highlightTokens: [] };
+        if (!q) return {results: rows, highlightTokens: []};
 
         const toks = parseQuery(q);
         const include = toks.filter((t) => !t.exclude);
@@ -291,7 +297,7 @@ export default function App() {
             }
 
             if (score > 0 || include.length === 0) {
-                res.push({ score, r: row.r });
+                res.push({score, r: row.r});
             }
         }
 
@@ -346,7 +352,7 @@ export default function App() {
         (async () => {
             try {
                 // Файл лежить у src/data; генеруємо URL, щоб забрати його як байти
-                const fileUrl = new URL("./data/Price_2025-07-11_N1.xml", import.meta.url);
+                const fileUrl = new URL("./data/PriceApp_2025-08-20_N2.xml", import.meta.url);
                 const res = await fetch(fileUrl);
                 const buf = await res.arrayBuffer();
                 const text = decodeXmlBytes(new Uint8Array(buf));
@@ -385,8 +391,6 @@ export default function App() {
     );
 
 
-
-
     const discounted = (p) => (activeDiscount ? p * (1 - activeDiscount / 100) : p);
 
     const modalContent = selected && (
@@ -419,10 +423,15 @@ export default function App() {
                     : "—"}
             </Descriptions.Item>
             <Descriptions.Item label="Ціна гурт (оригінал)">
-                {selected.Price ? `${selected.Price.toFixed(2)} ${selected.PriceCurrency || ""}`.trim() : "—"}
+                {typeof selected.WhPrice === "number"
+                    ? `${selected.WhPrice.toFixed(2)} ${selected.PriceCurrency || ""}`.trim()
+                    : "—"}
             </Descriptions.Item>
+
             <Descriptions.Item label="Ціна гурт (грн)">
-                {selected.Price ? `${selected.Price.toFixed(2)} ${selected.PriceCurrency || ""}`.trim() : "—"}
+                {toUAH(selected.WhPrice, selected.PriceCurrency) != null
+                    ? `${toUAH(selected.WhPrice, selected.PriceCurrency).toFixed(2)} грн`
+                    : "—"}
             </Descriptions.Item>
             <Descriptions.Item label="Валюта">{selected.PriceCurrency || "—"}</Descriptions.Item>
             <Descriptions.Item label="Виробник">{selected.ManufacturerName || "—"}</Descriptions.Item>
@@ -487,7 +496,7 @@ export default function App() {
                     </Flex>
                 </Flex>
 
-                <Text type="secondary" style={{ marginLeft: "auto" }}>
+                <Text type="secondary" style={{marginLeft: "auto"}}>
                     {rows.length ? `Знайдено: ${results.length} (у масиві: ${rows.length})` : "Завантаження XML..."}
                 </Text>
 
