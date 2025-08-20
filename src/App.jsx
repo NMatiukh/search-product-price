@@ -5,9 +5,9 @@ import {
 } from "antd";
 import "./App.css";
 
-const { Search } = Input;
-const { Text } = Typography;
-const { useBreakpoint } = Grid;
+const {Search} = Input;
+const {Text} = Typography;
+const {useBreakpoint} = Grid;
 
 /* ---------- ДЕКОДУВАННЯ XML З ПІДТРИМКОЮ encoding ---------- */
 function sniffXmlEncoding(bytes) {
@@ -19,9 +19,14 @@ function sniffXmlEncoding(bytes) {
     if (m && m[1]) return m[1].toLowerCase();
     return "utf-8";
 }
+
 function decodeXmlBytes(bytes) {
     const tryDecode = (enc) => {
-        try { return new TextDecoder(enc).decode(bytes); } catch { return null; }
+        try {
+            return new TextDecoder(enc).decode(bytes);
+        } catch {
+            return null;
+        }
     };
     const enc = sniffXmlEncoding(bytes);
     return (
@@ -80,7 +85,7 @@ function parseXmlToJson(xmlString) {
         return obj;
     };
 
-    return { [xml.documentElement.nodeName]: xmlToObj(xml.documentElement) };
+    return {[xml.documentElement.nodeName]: xmlToObj(xml.documentElement)};
 }
 
 /* ---------- Пошук першого масиву обʼєктів ---------- */
@@ -101,7 +106,7 @@ function findArrayOfObjects(anyJson) {
 /* ---------- Мапер потрібних полів ---------- */
 function mapProduct(item, idx) {
     const toBool = (v) => v === "1" || v === 1 || v === true || String(v).trim() === "1";
-    const toNum  = (v) => {
+    const toNum = (v) => {
         const n = Number(v);
         return Number.isFinite(n) ? n : 0;
     };
@@ -142,8 +147,12 @@ export default function App() {
         const v = localStorage.getItem("eurRate");
         return v ? Number(v) : 0;
     });
-    useEffect(() => { localStorage.setItem("usdRate", String(usdRate)); }, [usdRate]);
-    useEffect(() => { localStorage.setItem("eurRate", String(eurRate)); }, [eurRate]);
+    useEffect(() => {
+        localStorage.setItem("usdRate", String(usdRate));
+    }, [usdRate]);
+    useEffect(() => {
+        localStorage.setItem("eurRate", String(eurRate));
+    }, [eurRate]);
 
     const toUAH = (price, currency) => {
         if (!price && price !== 0) return null;
@@ -155,10 +164,11 @@ export default function App() {
     };
 
     const discountOption = [
-        { value: 5, label: "5%" },
-        { value: 10, label: "10%" },
-        { value: 15, label: "15%" },
-        { value: 20, label: "20%" },
+        {value: 0, label: "0%"},
+        {value: 5, label: "5%"},
+        {value: 10, label: "10%"},
+        {value: 15, label: "15%"},
+        {value: 20, label: "20%"},
     ];
 
     // === ЗАВАНТАЖЕННЯ XML З ПРОЄКТУ ===
@@ -184,8 +194,8 @@ export default function App() {
 
     // Тільки 2 колонки в таблиці
     const columns = useMemo(() => ([
-        { title: "Артикул", dataIndex: "BarCode", key: "BarCode", ellipsis: true },
-        { title: "Назва", dataIndex: "Name", key: "Name", ellipsis: true },
+        {title: "Артикул", dataIndex: "BarCode", key: "BarCode", ellipsis: true},
+        {title: "Назва", dataIndex: "Name", key: "Name", ellipsis: true},
     ]), []);
 
     const filteredRows = useMemo(() => {
@@ -203,22 +213,11 @@ export default function App() {
             size="middle"
             column={isMobile ? 1 : 2}
             bordered
-            labelStyle={{ width: 180 }}
-            style={{ wordBreak: "break-word" }}
+            labelStyle={{width: 180}}
+            style={{wordBreak: "break-word"}}
         >
             <Descriptions.Item label="Код 1С">{selected.Code || "—"}</Descriptions.Item>
             <Descriptions.Item label="Артикул">{selected.BarCode || "—"}</Descriptions.Item>
-            <Descriptions.Item label="Назва">{selected.Name || "—"}</Descriptions.Item>
-            <Descriptions.Item label="Виробник">{selected.ManufacturerName || "—"}</Descriptions.Item>
-            <Descriptions.Item label="Кількість">{selected.Amount}</Descriptions.Item>
-            <Descriptions.Item label="Застарілий">
-                {selected.Obsolete ? <Tag color="red">Так</Tag> : <Tag>Ні</Tag>}
-            </Descriptions.Item>
-            <Descriptions.Item label="Black Friday">
-                {selected.BlackFriday ? <Tag color="green">Так</Tag> : <Tag>Ні</Tag>}
-            </Descriptions.Item>
-            <Descriptions.Item label="Валюта">{selected.PriceCurrency || "—"}</Descriptions.Item>
-
             <Descriptions.Item label="Ціна (оригінал)">
                 {selected.Price ? `${selected.Price.toFixed(2)} ${selected.PriceCurrency || ""}`.trim() : "—"}
             </Descriptions.Item>
@@ -238,20 +237,31 @@ export default function App() {
                     ? `${toUAH(discounted(selected.Price), selected.PriceCurrency).toFixed(2)} грн`
                     : "—"}
             </Descriptions.Item>
+            <Descriptions.Item label="Валюта">{selected.PriceCurrency || "—"}</Descriptions.Item>
+            <Descriptions.Item label="Виробник">{selected.ManufacturerName || "—"}</Descriptions.Item>
+            <Descriptions.Item label="Кількість">{selected.Amount}</Descriptions.Item>
+            <Descriptions.Item label="Застарілий">
+                {selected.Obsolete ? <Tag color="red">Так</Tag> : <Tag>Ні</Tag>}
+            </Descriptions.Item>
+            <Descriptions.Item label="Black Friday">
+                {selected.BlackFriday ? <Tag color="green">Так</Tag> : <Tag>Ні</Tag>}
+            </Descriptions.Item>
+
+
         </Descriptions>
     );
 
     return (
-        <Flex vertical gap={isMobile ? 8 : 12} style={{ padding: isMobile ? 8 : 16, maxWidth: 1200, margin: "0 auto" }}>
-            <Divider style={{ margin: isMobile ? "8px 0" : "12px 0" }} />
+        <Flex vertical gap={isMobile ? 8 : 12} style={{padding: isMobile ? 8 : 16, maxWidth: 1200, margin: "0 auto"}}>
+            <Divider style={{margin: isMobile ? "8px 0" : "12px 0"}}/>
 
-            <Flex gap={8} align="center" wrap style={{ rowGap: 8 }}>
+            <Flex gap={8} align="center" wrap style={{rowGap: 8}}>
                 <Search
                     placeholder="Введіть артикул або назву"
                     allowClear
                     onSearch={setSearchValue}
                     onChange={(e) => setSearchValue(e.target.value)}
-                    style={{ flex: isMobile ? "1 1 100%" : "0 1 420px", minWidth: 200 }}
+                    style={{flex: isMobile ? "1 1 100%" : "0 1 420px", minWidth: 200}}
                     size={isMobile ? "middle" : "large"}
                 />
 
@@ -260,12 +270,12 @@ export default function App() {
                     placeholder="Виберіть знижку"
                     options={discountOption}
                     onChange={(v) => setActiveDiscount(v || 0)}
-                    style={{ width: isMobile ? 140 : 200 }}
+                    style={{width: isMobile ? 140 : 200}}
                     size={isMobile ? "middle" : "large"}
                     value={activeDiscount || undefined}
                 />
 
-                <Flex align="center" gap={6} style={{ flexWrap: "wrap" }}>
+                <Flex align="center" gap={6} style={{flexWrap: "wrap"}}>
                     <Text type="secondary">Курс:</Text>
                     <Flex align="center" gap={4}>
                         <Text>USD</Text>
@@ -275,7 +285,7 @@ export default function App() {
                             onChange={(v) => setUsdRate(Number(v) || 0)}
                             placeholder="грн"
                             size={isMobile ? "middle" : "large"}
-                            style={{ width: 110 }}
+                            style={{width: 110}}
                         />
                     </Flex>
                     <Flex align="center" gap={4}>
@@ -286,12 +296,12 @@ export default function App() {
                             onChange={(v) => setEurRate(Number(v) || 0)}
                             placeholder="грн"
                             size={isMobile ? "middle" : "large"}
-                            style={{ width: 110 }}
+                            style={{width: 110}}
                         />
                     </Flex>
                 </Flex>
 
-                <Text type="secondary" style={{ marginLeft: "auto" }}>
+                <Text type="secondary" style={{marginLeft: "auto"}}>
                     {rows.length ? `Знайдено: ${filteredRows.length} (у масиві: ${rows.length})` : "Завантаження XML..."}
                 </Text>
             </Flex>
@@ -302,10 +312,13 @@ export default function App() {
                 dataSource={filteredRows}
                 rowKey="key"
                 onRow={(record) => ({
-                    onClick: () => { setSelected(record); setOpenModal(true); },
-                    style: { cursor: "pointer" }
+                    onClick: () => {
+                        setSelected(record);
+                        setOpenModal(true);
+                    },
+                    style: {cursor: "pointer"}
                 })}
-                scroll={{ x: "max-content" }}
+                scroll={{x: "max-content"}}
                 tableLayout="auto"
                 sticky
                 pagination={{
@@ -313,7 +326,7 @@ export default function App() {
                     pageSize: isMobile ? 10 : 20,
                     showSizeChanger: !isMobile,
                 }}
-                style={{ width: "100%" }}
+                style={{width: "100%"}}
             />
 
             <Modal
