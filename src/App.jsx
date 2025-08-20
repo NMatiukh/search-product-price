@@ -383,7 +383,7 @@ export default function App() {
                 dataIndex: "BarCode",
                 key: "BarCode",
                 ellipsis: true,
-                render: (val) => highlightText(val, highlightTokens),
+                render: (val) => highlightText(typeof val === "string" ? val : '', highlightTokens),
                 width: 160,
             },
         ],
