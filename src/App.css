@@ -40,3 +40,27 @@
 .read-the-docs {
   color: #888;
 }
+
+/* iOS Safari: не зумить інпут при фокусі, якщо font-size >= 16px */
+@media (max-width: 768px) {
+  /* antd Input + Search */
+  .ant-input,
+  .ant-input-affix-wrapper,
+  .ant-input-affix-wrapper input {
+    font-size: 14px !important;
+  }
+
+  /* antd Select */
+  .ant-select-selector,
+  .ant-select-selection-item,
+  .ant-select-selection-placeholder,
+  .ant-select-selection-search-input {
+    font-size: 14px !important;
+  }
+
+  /* antd InputNumber */
+  .ant-input-number,
+  .ant-input-number-input {
+    font-size: 14px !important;
+  }
+}

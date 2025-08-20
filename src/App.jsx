@@ -194,8 +194,8 @@ export default function App() {
 
     // Тільки 2 колонки в таблиці
     const columns = useMemo(() => ([
-        {title: "Артикул", dataIndex: "BarCode", key: "BarCode", ellipsis: true},
         {title: "Назва", dataIndex: "Name", key: "Name", ellipsis: true},
+        {title: "Артикул", dataIndex: "BarCode", key: "BarCode", ellipsis: true},
     ]), []);
 
     const filteredRows = useMemo(() => {
@@ -236,6 +236,12 @@ export default function App() {
                 {toUAH(discounted(selected.Price), selected.PriceCurrency) != null
                     ? `${toUAH(discounted(selected.Price), selected.PriceCurrency).toFixed(2)} грн`
                     : "—"}
+            </Descriptions.Item>
+            <Descriptions.Item label="Ціна гурт (оригінал)">
+                {selected.Price ? `${selected.Price.toFixed(2)} ${selected.PriceCurrency || ""}`.trim() : "—"}
+            </Descriptions.Item>
+            <Descriptions.Item label="Ціна гурт (грн)">
+                {selected.Price ? `${selected.Price.toFixed(2)} ${selected.PriceCurrency || ""}`.trim() : "—"}
             </Descriptions.Item>
             <Descriptions.Item label="Валюта">{selected.PriceCurrency || "—"}</Descriptions.Item>
             <Descriptions.Item label="Виробник">{selected.ManufacturerName || "—"}</Descriptions.Item>
@@ -325,7 +331,7 @@ export default function App() {
                     pageSize: isMobile ? 10 : 20,
                     showSizeChanger: !isMobile,
                 }}
-                style={{width: "100%"}}
+                style={{width: "100%", fontSize: 14}}
             />
 
             <Modal
