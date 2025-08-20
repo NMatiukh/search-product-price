@@ -1,128 +1,108 @@
+/* =============== Base =============== */
+html, body, #root {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
 #root {
-    /*max-width: 1280px;*/
     margin: 0 auto;
-    /*padding: 2rem;*/
-    text-align: center;
+    max-width: 1200px;
+    padding: 8px 12px;
+    text-align: left; /* важливо: не центруємо контент */
 }
 
-.logo {
-    height: 6em;
-    padding: 1.5em;
-    will-change: filter;
-    transition: filter 300ms;
+/* Підсвітка збігів у пошуку */
+mark {
+    background: #fff2be;
+    color: inherit;
+    padding: 0 2px;
+    border-radius: 2px;
 }
 
-.logo:hover {
-    filter: drop-shadow(0 0 2em #646cffaa);
+/* =============== Table (AntD) =============== */
+/* Вимкнути авто-збільшення шрифтів у таблицях на мобільних браузерах */
+.ant-table-wrapper {
+    -webkit-text-size-adjust: none;
+    text-size-adjust: none;
 }
 
-.logo.react:hover {
-    filter: drop-shadow(0 0 2em #61dafbaa);
+/* Базовий розмір шрифту в таблиці */
+.ant-table-wrapper .ant-table {
+    font-size: 12px;
+    line-height: 1.4;
 }
 
-@keyframes logo-spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+/* Успадковуємо 12px для заголовка та комірок */
+.ant-table-wrapper .ant-table-thead > tr > th,
+.ant-table-wrapper .ant-table-tbody > tr > td {
+    font-size: inherit;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-    a:nth-of-type(2) .logo {
-        animation: logo-spin infinite 20s linear;
-    }
+/* Тонкі роздільники — чистіший вигляд */
+.ant-table-wrapper .ant-table-tbody > tr > td {
+    border-color: #f0f0f0;
 }
 
-.card {
-    padding: 2em;
+/* Клік по рядку виглядає як активний */
+.ant-table-wrapper .ant-table-tbody > tr:hover > td {
+    background: #fafafa;
+    cursor: pointer;
 }
 
-.read-the-docs {
-    color: #888;
+/* =============== Descriptions (модалка) =============== */
+.ant-descriptions-bordered .ant-descriptions-item-label {
+    width: 180px;
+    background: #fafafa;
 }
 
-/* iOS Safari: не зумить інпут при фокусі, якщо font-size >= 16px */
+/* =============== Forms (Input / Select / Number) =============== */
+/* iOS/Chrome iOS/Android: щоб не зумило екран при фокусі — 16px+ */
 @media (max-width: 768px) {
-    /* antd Input + Search */
     .ant-input,
     .ant-input-affix-wrapper,
-    .ant-input-affix-wrapper input {
-        font-size: 12px !important;
-    }
-
-    /* antd Select */
+    .ant-input-affix-wrapper input,
     .ant-select-selector,
     .ant-select-selection-item,
     .ant-select-selection-placeholder,
-    .ant-select-selection-search-input {
-        font-size: 12px !important;
-    }
-
-    /* antd InputNumber */
+    .ant-select-selection-search-input,
     .ant-input-number,
     .ant-input-number-input {
-        font-size: 12px !important;
+        font-size: 16px !important;
     }
 }
-/* iOS/Chrome iOS: не зумить інпут при фокусі */
-@media (max-width: 768px) {
-  .ant-input,
-  .ant-input-affix-wrapper,
-  .ant-input-affix-wrapper input,
-  .ant-select-selector,
-  .ant-select-selection-item,
-  .ant-select-selection-placeholder,
-  .ant-select-selection-search-input,
-  .ant-input-number,
-  .ant-input-number-input {
-    font-size: 12px !important;
-  }
-}
-/* Заборонити автоінфляцію шрифту в таблиці на мобайл */
-.ant-table-wrapper {
-  -webkit-text-size-adjust: none;
-  text-size-adjust: none;
+
+/* На десктопі залишаємо стандартний розмір AntD */
+@media (min-width: 769px) {
+    .ant-input,
+    .ant-input-affix-wrapper,
+    .ant-input-affix-wrapper input,
+    .ant-select-selector,
+    .ant-select-selection-item,
+    .ant-select-selection-placeholder,
+    .ant-select-selection-search-input,
+    .ant-input-number,
+    .ant-input-number-input {
+        font-size: 14px;
+    }
 }
 
-/* Зафіксувати 12px в antd-таблиці */
-.ant-table-wrapper .ant-table {
-  font-size: 12px;              /* базовий розмір */
-  line-height: 1.4;
-}
-.ant-table-wrapper .ant-table-thead > tr > th,
-.ant-table-wrapper .ant-table-tbody > tr > td {
-  font-size: inherit;           /* успадковує 12px */
+/* =============== Misc =============== */
+/* Зменшуємо відступи між блоками зверху/знизу */
+.ant-divider {
+    margin: 8px 0;
 }
 
-/*.ant-table-thead > tr > th, td {*/
-/*    font-size: 12px !important;*/
-/*}*/
-.ant-table.ant-table-small > td {
-    font-size: 12px !important;
-}
-
-.ant-table-wrapper > td {
-    font-size: 12px !important;
-}
-
-.ant-table-cell > td {
-    font-size: 12px !important;
-}
-
-.ant-table-thead > tr > th {
-    font-size: 12px !important;
-}
-
-.ant-table-tbody > tr > td {
-    font-size: 12px !important;
-}
-
-td {
-    font-size: 12px !important;
-}
-
-table {
-    font-size: 12px !important;
+/* Щоб дрібні елементи не роздувалися на мобільному */
+.ant-input-number,
+.ant-select,
+.ant-input {
+    width: 100%;
+    box-sizing: border-box;
 }
