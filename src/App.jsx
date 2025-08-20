@@ -332,7 +332,7 @@ export default function App() {
                     pageSize: 10000,
                     showSizeChanger: !isMobile,
                 }}
-                style={{width: "100%", fontSize: 14}}
+                style={{width: "100%", fontSize: 12}}
             />
 
             <Modal
