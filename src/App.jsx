@@ -124,6 +124,98 @@ function mapProduct(item, idx) {
         ManufacturerName: item.ManufacturerName ?? "",
     };
 }
+// ======== SEARCH UTILS ========
+const FIELD_WEIGHTS = { name: 3, barcode: 4, code: 2, maker: 1 };
+
+const normalize = (s) =>
+    String(s ?? "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, ""); // без діакритики
+
+const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+// простий Levenshtein (вистачає для 7к рядків)
+function dist(a, b) {
+    a = normalize(a); b = normalize(b);
+    const m = a.length, n = b.length;
+    if (!m || !n) return m || n;
+    const dp = Array.from({ length: n + 1 }, (_, j) => j);
+    for (let i = 1; i <= m; i++) {
+        let prev = dp[0]; dp[0] = i;
+        for (let j = 1; j <= n; j++) {
+            const tmp = dp[j];
+            dp[j] = a[i - 1] === b[j - 1]
+                ? prev
+                : 1 + Math.min(prev, dp[j - 1], dp[j]);
+            prev = tmp;
+        }
+    }
+    return dp[n];
+}
+
+// парсер запиту: лапки, +, -, field:
+function parseQuery(q) {
+    const tokens = [];
+    const re = /(-|\+)?(?:(name|barcode|code|maker):)?(?:"([^"]+)"|(\S+))/gi;
+    let m;
+    while ((m = re.exec(q))) {
+        const op = m[1] || "";
+        const field = (m[2] || "").toLowerCase();
+        const text = m[3] || m[4] || "";
+        if (!text) continue;
+        tokens.push({
+            text,
+            norm: normalize(text),
+            field: field || null,
+            required: op === "+",
+            exclude: op === "-",
+            phrase: Boolean(m[3]),
+        });
+    }
+    return tokens;
+}
+
+// оцінка збігу одного токена по одному полі
+function scoreField(fieldValue, token) {
+    const v = normalize(fieldValue);
+    const t = token.norm;
+
+    if (!v || !t) return 0;
+
+    if (v === t) return 100;                  // повний збіг
+    if (v.startsWith(t)) return 70;           // початок
+    if (v.includes(t)) return 50;             // підрядок
+
+    // fuzzy: порівнюємо з окремими словами поля
+    if (t.length >= 3) {
+        let best = Infinity;
+        for (const w of v.split(/[\s\-_/.,]+/)) {
+            if (!w) continue;
+            const d = dist(w, t);
+            if (d < best) best = d;
+            if (best === 0) break;
+        }
+        if (best === 1) return 35;
+        if (best === 2) return 18;
+    }
+    return 0;
+}
+
+// підсвітка збігів у тексті
+function highlightText(text, highlightTokens) {
+    const str = String(text ?? "");
+    if (!str || !highlightTokens.length) return str;
+
+    const pattern = new RegExp(
+        "(" + highlightTokens.map((t) => esc(t)).join("|") + ")",
+        "gi"
+    );
+    const parts = str.split(pattern);
+    return parts.map((p, i) =>
+        pattern.test(p) ? <mark key={i}>{p}</mark> : <span key={i}>{p}</span>
+    );
+}
 
 /* ---------- Компонент ---------- */
 export default function App() {
@@ -133,6 +225,84 @@ export default function App() {
     const [activeDiscount, setActiveDiscount] = useState(0);
     const [searchValue, setSearchValue] = useState();
     const [rows, setRows] = useState([]);
+// індекс для швидкого пошуку (нормалізовані поля)
+    const index = useMemo(
+        () =>
+            rows.map((r) => ({
+                r,
+                name: normalize(r.Name),
+                barcode: normalize(r.BarCode),
+                code: normalize(r.Code),
+                maker: normalize(r.ManufacturerName),
+                haystack: normalize(`${r.Name} ${r.BarCode} ${r.Code} ${r.ManufacturerName}`),
+            })),
+        [rows]
+    );
+
+// основний пошук + сортування
+    const { results, highlightTokens } = useMemo(() => {
+        const q = String(searchValue || "").trim();
+        if (!q) return { results: rows, highlightTokens: [] };
+
+        const toks = parseQuery(q);
+        const include = toks.filter((t) => !t.exclude);
+        const exclude = toks.filter((t) => t.exclude);
+        const required = include.filter((t) => t.required);
+
+        const res = [];
+
+        loop: for (const row of index) {
+            // - виключення
+            for (const t of exclude) {
+                const fieldVal = t.field ? row[t.field] : row.haystack;
+                if (fieldVal && fieldVal.includes(t.norm)) continue loop;
+            }
+
+            // + обовʼязкові
+            for (const t of required) {
+                const fieldVal = t.field ? row[t.field] : row.haystack;
+                if (!fieldVal || !fieldVal.includes(t.norm)) continue loop;
+            }
+
+            // набір полів для оцінки
+            const fields = [
+                ["name", FIELD_WEIGHTS.name],
+                ["barcode", FIELD_WEIGHTS.barcode],
+                ["code", FIELD_WEIGHTS.code],
+                ["maker", FIELD_WEIGHTS.maker],
+            ];
+
+            let score = 0;
+            for (const tok of include) {
+                let best = 0;
+                if (tok.field) {
+                    best = scoreField(row[tok.field], tok) * (FIELD_WEIGHTS[tok.field] || 1);
+                } else {
+                    for (const [f, w] of fields) {
+                        best = Math.max(best, scoreField(row[f], tok) * w);
+                    }
+                }
+                score += best;
+            }
+
+            // легкий буст за короткі/повні артикул-коди
+            if (include.some((t) => t.norm === row.barcode || t.norm === row.code)) {
+                score += 30;
+            }
+
+            if (score > 0 || include.length === 0) {
+                res.push({ score, r: row.r });
+            }
+        }
+
+        // сортуємо: кращий скор — вище
+        res.sort((a, b) => b.score - a.score);
+
+        return {
+            results: res.map((x) => x.r),
+            highlightTokens: include.filter((t) => !t.exclude).map((t) => t.text),
+        };
+    }, [index, searchValue]);
 
     // Modal
     const [openModal, setOpenModal] = useState(false);
@@ -193,18 +363,29 @@ export default function App() {
     }, []);
 
     // Тільки 2 колонки в таблиці
-    const columns = useMemo(() => ([
-        {title: "Назва", dataIndex: "Name", key: "Name", ellipsis: true},
-        {title: "Артикул", dataIndex: "BarCode", key: "BarCode", ellipsis: true},
-    ]), []);
+    const columns = useMemo(
+        () => [
+            {
+                title: "Назва",
+                dataIndex: "Name",
+                key: "Name",
+                ellipsis: true,
+                render: (val) => highlightText(val, highlightTokens),
+            },
+            {
+                title: "Артикул",
+                dataIndex: "BarCode",
+                key: "BarCode",
+                ellipsis: true,
+                render: (val) => highlightText(val, highlightTokens),
+                width: 160,
+            },
+        ],
+        [highlightTokens]
+    );
 
-    const filteredRows = useMemo(() => {
-        if (!searchValue) return rows;
-        const q = String(searchValue).toLowerCase();
-        return rows.filter((r) =>
-            Object.values(r).some((v) => (v != null ? String(v).toLowerCase().includes(q) : false))
-        );
-    }, [rows, searchValue]);
+
+
 
     const discounted = (p) => (activeDiscount ? p * (1 - activeDiscount / 100) : p);
 
@@ -306,15 +487,16 @@ export default function App() {
                     </Flex>
                 </Flex>
 
-                <Text type="secondary" style={{marginLeft: "auto"}}>
-                    {rows.length ? `Знайдено: ${filteredRows.length} (у масиві: ${rows.length})` : "Завантаження XML..."}
+                <Text type="secondary" style={{ marginLeft: "auto" }}>
+                    {rows.length ? `Знайдено: ${results.length} (у масиві: ${rows.length})` : "Завантаження XML..."}
                 </Text>
+
             </Flex>
 
             <Table
                 size="small"
                 columns={columns}
-                dataSource={filteredRows}
+                dataSource={results}
                 rowKey="key"
                 onRow={(record) => ({
                     onClick: () => {
@@ -328,8 +510,8 @@ export default function App() {
                 sticky
                 pagination={{
                     size: isMobile ? "small" : "default",
-                    // pageSize: isMobile ? 10 : 20,
-                    pageSize: 10000,
+                    pageSize: isMobile ? 10 : 20,
+                    // pageSize: 10000,
                     showSizeChanger: !isMobile,
                 }}
                 style={{width: "100%", fontSize: 12}}
