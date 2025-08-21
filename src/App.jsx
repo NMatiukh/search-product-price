@@ -102,6 +102,12 @@ function findArrayOfObjects(anyJson) {
     }
     return null;
 }
+// Безпечно дістає текст (підтримка об'єктів виду {_text: "..."})
+function asText(v) {
+    if (v == null) return "";
+    if (typeof v === "object" && "_text" in v && v._text != null) return String(v._text).trim();
+    return String(v).trim();
+}
 
 /* ---------- Мапер потрібних полів ---------- */
 function mapProduct(item, idx) {
@@ -112,21 +118,23 @@ function mapProduct(item, idx) {
         return Number.isFinite(n) ? n : 0;
     };
 
+    const manufacturer = asText(item.ManufacturerName) || "Виробника немає";
 
     return {
         key: idx,
         Amount: toNum(item.Amount),
-        BarCode: item.BarCode ?? "",
+        BarCode: asText(item.BarCode) || "",
         BlackFriday: toBool(item.BlackFriday),
-        Code: item.Code ?? "",
-        Name: item.Name ?? "",
+        Code: asText(item.Code) || "",
+        Name: asText(item.Name) || "",
         Obsolete: toBool(item.Obsolete),
         Price: toNum(item.Price),
-        PriceCurrency: item.PriceCurrency ?? "",
-        ManufacturerName: item.ManufacturerName ?? "",
+        PriceCurrency: asText(item.PriceCurrency) || "",
+        ManufacturerName: manufacturer,           // <-- завжди рядок, з плейсхолдером
         WhPrice: toNum(item.WhPrice),
     };
 }
+
 
 // ======== SEARCH UTILS ========
 const FIELD_WEIGHTS = {name: 3, barcode: 4, code: 2, maker: 1};
@@ -231,19 +239,40 @@ export default function App() {
     const [activeDiscount, setActiveDiscount] = useState(0);
     const [searchValue, setSearchValue] = useState();
     const [rows, setRows] = useState([]);
+    const [makerFilter, setMakerFilter] = useState();
+    const manufacturers = useMemo(
+        () =>
+            Array.from(
+                new Set(
+                    rows.map(r => asText(r.ManufacturerName) || "Виробника немає").filter(Boolean)
+                )
+            ).sort((a, b) => a.localeCompare(b, "uk")),
+        [rows]
+    );
+
+    const makerOptions = useMemo(
+        () => manufacturers.map(m => ({ value: m, label: m })),
+        [manufacturers]
+    );
+
+
 // індекс для швидкого пошуку (нормалізовані поля)
     const index = useMemo(
         () =>
-            rows.map((r) => ({
-                r,
-                name: normalize(r.Name),
-                barcode: normalize(r.BarCode),
-                code: normalize(r.Code),
-                maker: normalize(r.ManufacturerName),
-                haystack: normalize(`${r.Name} ${r.BarCode} ${r.Code} ${r.ManufacturerName}`),
-            })),
+            rows.map((r) => {
+                const makerTxt = asText(r.ManufacturerName) || "Виробника немає";
+                return {
+                    r,
+                    name: normalize(asText(r.Name)),
+                    barcode: normalize(asText(r.BarCode)),
+                    code: normalize(asText(r.Code)),
+                    maker: normalize(makerTxt),
+                    haystack: normalize(`${asText(r.Name)} ${asText(r.BarCode)} ${asText(r.Code)} ${makerTxt}`),
+                };
+            }),
         [rows]
     );
+
 
 // основний пошук + сортування
     const {results, highlightTokens} = useMemo(() => {
@@ -309,6 +338,13 @@ export default function App() {
             highlightTokens: include.filter((t) => !t.exclude).map((t) => t.text),
         };
     }, [index, searchValue]);
+    const displayRows = useMemo(
+        () => makerFilter
+            ? results.filter(r => normalize(asText(r.ManufacturerName) || "Виробника немає") === normalize(makerFilter))
+            : results,
+        [results, makerFilter]
+    );
+
 
     // Modal
     const [openModal, setOpenModal] = useState(false);
@@ -470,6 +506,17 @@ export default function App() {
                     size={isMobile ? "middle" : "large"}
                     value={activeDiscount || undefined}
                 />
+                <Select
+                    allowClear
+                    placeholder="Фільтр: виробник"
+                    options={makerOptions}
+                    value={makerFilter}
+                    onChange={(v) => setMakerFilter(v || undefined)}
+                    style={{ width: isMobile ? "100%" : 240 }}
+                    size={isMobile ? "middle" : "large"}
+                    showSearch
+                    optionFilterProp="label"
+                />
 
                 <Flex align="center" gap={6} style={{flexWrap: "wrap"}}>
                     <Flex align="center" gap={4}>
@@ -496,24 +543,30 @@ export default function App() {
                     </Flex>
                 </Flex>
 
-                <Text type="secondary" style={{marginLeft: "auto"}}>
-                    {rows.length ? `Знайдено: ${results.length} (у масиві: ${rows.length})` : "Завантаження XML..."}
+                <Text type="secondary" style={{ marginLeft: "auto" }}>
+                    {rows.length ? `Знайдено: ${displayRows.length} (у масиві: ${rows.length})` : "Завантаження XML..."}
                 </Text>
+
 
             </Flex>
 
             <Table
                 size="small"
                 columns={columns}
-                dataSource={results}
+                dataSource={displayRows}
                 rowKey="key"
                 onRow={(record) => ({
-                    onClick: () => {
-                        setSelected(record);
-                        setOpenModal(true);
-                    },
-                    style: {cursor: "pointer"}
+                    onClick: () => { setSelected(record); setOpenModal(true); },
+                    style: {
+                        cursor: "pointer",
+                        backgroundColor: record.Obsolete
+                            ? "#f5f5f5"                                   // 1) застарілий → сірий
+                            : Number(record.Amount) <= 0
+                                ? "#fff1f0"                                 // 2) немає в наявності → червоний фон
+                                : undefined
+                    }
                 })}
+
                 scroll={{x: "max-content"}}
                 tableLayout="auto"
                 sticky
