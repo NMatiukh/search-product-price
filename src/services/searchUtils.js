@@ -1,3 +1,4 @@
+// ======== SEARCH UTILS ========
 export const FIELD_WEIGHTS = { name: 3, barcode: 4, code: 2, maker: 1 };
 
 export const normalize = (s) =>

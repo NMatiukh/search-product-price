@@ -17,7 +17,7 @@ function sniffXmlEncoding(bytes) {
   return "utf-8";
 }
 
-function decodeXmlBytes(bytes) {
+export function decodeXmlBytes(bytes) {
   const tryDecode = (enc) => {
     try {
       return new TextDecoder(enc).decode(bytes);
@@ -35,5 +35,3 @@ function decodeXmlBytes(bytes) {
     tryDecode("iso-8859-1")
   );
 }
-
-export { decodeXmlBytes };
