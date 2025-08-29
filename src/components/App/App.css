@@ -112,3 +112,8 @@ mark {
 /*    padding-right: 0 !important;*/
 /*    font-size: 12px !important*/
 /*}*/
+/* глобальний CSS */
+.tight-table .ant-table-tbody > tr > td,
+.tight-table .ant-table-thead > tr > th {
+    padding: 0 !important;
+}

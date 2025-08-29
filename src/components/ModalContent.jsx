@@ -141,12 +141,14 @@ export default function ModalContent({
                 pagination={false}
                 bordered
                 size={isMobile ? "small" : "middle"}
+                // className={'tight-table'}
             />
 
             <Divider style={{ margin: isMobile ? "8px 0" : "12px 0" }} />
 
             {/* Таблиця зі знижкою (значення приховані до утримання кліку) */}
             <Table
+                // className={'tight-table'}
                 dataSource={dataSourceDiscounted}
                 columns={columns}
                 pagination={false}
