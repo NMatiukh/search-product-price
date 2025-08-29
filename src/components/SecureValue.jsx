@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
 
-export default function SecureValue({ value, blur = 6, align = "right" }) {
+export default function SecureValue({ value, blur = 6, align = "right", style }) {
     const [visible, setVisible] = useState(false);
 
     const toggle = useCallback((e) => {
@@ -31,8 +31,10 @@ export default function SecureValue({ value, blur = 6, align = "right" }) {
                 display: "inline-block",
                 minWidth: 40,      // щоб зона не стрибала під час тоглу
                 textAlign: align,  // зручно для правого вирівнювання в таблицях
-                width: '100%',
-                height: '100%',
+                // width: '100%',
+                // height: '100%',
+                padding: '8px',
+                ...style,
             }}
             title={visible ? "Клікніть, щоб приховати" : "Клікніть, щоб показати"}
         >

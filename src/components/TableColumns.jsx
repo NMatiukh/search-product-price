@@ -1,6 +1,6 @@
-import {Table} from "antd";
-import {useMemo} from "react";
-import {highlightText} from "../services/highlightText";
+import { Table } from "antd";
+import { useMemo } from "react";
+import { highlightText } from "../services/highlightText";
 
 export default function TableColumns({
                                          displayRows,
@@ -8,8 +8,8 @@ export default function TableColumns({
                                          setOpenModal,
                                          isMobile,
                                          highlightTokens,
+                                         toUAH, // ⬅️ додали
                                      }) {
-    // Тільки 2 колонки в таблиці
     const columns = useMemo(
         () => [
             {
@@ -28,9 +28,27 @@ export default function TableColumns({
                 ellipsis: true,
                 render: (val) => highlightText(val, highlightTokens),
             },
-
+            {
+                title: "Ціна (грн)",
+                dataIndex: "Price",
+                key: "PriceUAH",
+                align: "right",
+                width: 120,
+                render: (val, record) => {
+                    const amount = typeof val === "number" ? val : Number(val);
+                    const uah = toUAH?.(amount, record?.PriceCurrency || "UAH");
+                    return uah != null && Number.isFinite(uah)
+                        ? new Intl.NumberFormat("uk-UA", {
+                            style: "currency",
+                            currency: "UAH",
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                        }).format(uah)
+                        : "—";
+                },
+            },
         ],
-        [highlightTokens]
+        [highlightTokens, toUAH]
     );
 
     return (
@@ -47,22 +65,21 @@ export default function TableColumns({
                 style: {
                     cursor: "pointer",
                     backgroundColor: record.Obsolete
-                        ? "#f5f5f5" // 1) застарілий → сірий
+                        ? "#f5f5f5"
                         : Number(record.Amount) <= 0
-                            ? "#fff1f0" // 2) немає в наявності → червоний фон
+                            ? "#fff1f0"
                             : undefined,
                 },
             })}
-            scroll={{x: "max-content"}}
+            scroll={{ x: "max-content" }}
             tableLayout="auto"
             sticky
             pagination={{
                 size: isMobile ? "small" : "default",
                 pageSize: isMobile ? 10 : 20,
-                // pageSize: 10000,
                 showSizeChanger: !isMobile,
             }}
-            style={{width: "100%", fontSize: 12}}
+            style={{ width: "100%", fontSize: 12 }}
         />
     );
 }

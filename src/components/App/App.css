@@ -116,4 +116,9 @@ mark {
 .tight-table .ant-table-tbody > tr > td,
 .tight-table .ant-table-thead > tr > th {
     padding: 0 !important;
+
+}
+
+.ant-descriptions-item-content.test-class-name {
+    padding: 0 !important;
 }

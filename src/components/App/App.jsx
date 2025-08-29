@@ -1,4 +1,4 @@
-import {useEffect, useMemo, useState} from "react";
+import {useCallback, useEffect, useMemo, useState} from "react";
 import {
     //   Descriptions,
     Divider,
@@ -67,6 +67,7 @@ export default function App() {
     const discountOption = [
         {value: 0, label: "0%"},
         {value: 5, label: "5%"},
+        {value: 7, label: "7%"},
         {value: 10, label: "10%"},
         {value: 15, label: "15%"},
         {value: 20, label: "20%"},
@@ -217,7 +218,40 @@ export default function App() {
             }
         })();
     }, []);
+    const parseAmount = (v) => {
+        if (v == null) return NaN;
+        if (typeof v === "number") return v;
+        // підчищаємо можливі пробіли/коми
+        const s = String(v).replace(/\s/g, "").replace(",", ".");
+        const n = Number(s);
+        return Number.isFinite(n) ? n : NaN;
+    };
 
+    const normalizeCurrency = (cur = "UAH") => {
+        const s = String(cur || "UAH").trim().toUpperCase();
+        if (["USD", "$", "DOLLAR", "ДОЛАР", "ДОЛЛАР"].includes(s)) return "USD";
+        if (["EUR", "€", "EURO", "ЄВРО"].includes(s)) return "EUR";
+        if (["UAH", "₴", "ГРН", "ГРИВНЯ"].includes(s)) return "UAH";
+        return "UAH";
+    };
+
+    const toUAH = useCallback(
+        (val, cur) => {
+            const amount = parseAmount(val);
+            if (!Number.isFinite(amount)) return null;
+            const code = normalizeCurrency(cur);
+            switch (code) {
+                case "USD":
+                    return usdRate ? amount * usdRate : null;
+                case "EUR":
+                    return eurRate ? amount * eurRate : null;
+                case "UAH":
+                default:
+                    return amount;
+            }
+        },
+        [usdRate, eurRate]
+    );
     return (
         <Flex
             vertical
@@ -262,6 +296,7 @@ export default function App() {
                 setSelected={setSelected}
                 setOpenModal={setOpenModal}
                 isMobile={isMobile}
+                toUAH={toUAH}
             />
 
             <ModalWindow

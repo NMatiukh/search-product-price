@@ -5,7 +5,7 @@ const { Search } = Input;
 export default function SearchBar({ onSearch, isMobile}) {
   return (
     <>
-      <Search
+      <Input
         placeholder="Введіть артикул або назву"
         allowClear
         onSearch={onSearch}
