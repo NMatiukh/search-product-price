@@ -1,83 +1,183 @@
-import React from 'react'
+import React from "react";
+import { Descriptions, Table, Tag, Divider } from "antd";
+import SecureValue from "./SecureValue.jsx";
 
-export default function ModalContent({ selected, isMobile, activeDiscount, toUAH }) {
+export default function ModalContent({
+                                         selected,
+                                         isMobile,
+                                         activeDiscount,
+                                         toUAH,
+                                         valueRate, // { usdRate, eurRate }
+                                     }) {
+    const usdRate = valueRate?.usdRate ?? 0;
+    const eurRate = valueRate?.eurRate ?? 0;
+
     const discounted = (p) =>
-      activeDiscount ? p * (1 - activeDiscount / 100) : p;
+        typeof p === "number" && activeDiscount
+            ? p * (1 - activeDiscount / 100)
+            : p;
 
-  return (
-    <>
-      <Descriptions
-        size="middle"
-        column={isMobile ? 1 : 2}
-        bordered
-        labelStyle={{ width: 180 }}
-        style={{ wordBreak: "break-word" }}
-      >
-        <Descriptions.Item label="Код 1С">
-          {selected.Code || "—"}
-        </Descriptions.Item>
-        <Descriptions.Item label="Артикул">
-          {selected.BarCode || "—"}
-        </Descriptions.Item>
-        <Descriptions.Item label="Ціна (оригінал)">
-          {selected.Price
-            ? `${selected.Price.toFixed(2)} ${
-                selected.PriceCurrency || ""
-              }`.trim()
-            : "—"}
-        </Descriptions.Item>
-        <Descriptions.Item label={`Ціна зі знижкою (${activeDiscount || 0}%)`}>
-          {selected.Price
-            ? `${discounted(selected.Price).toFixed(2)} ${
-                selected.PriceCurrency || ""
-              }`.trim()
-            : "—"}
-        </Descriptions.Item>
+    const fmt = (n) =>
+        typeof n === "number" && Number.isFinite(n) ? n.toFixed(2) : "—";
 
-        <Descriptions.Item label="Ціна (грн)">
-          {toUAH(selected.Price, selected.PriceCurrency) != null
-            ? `${toUAH(selected.Price, selected.PriceCurrency).toFixed(2)} грн`
-            : "—"}
-        </Descriptions.Item>
-        <Descriptions.Item label={`Ціна зі знижкою (грн)`}>
-          {toUAH(discounted(selected.Price), selected.PriceCurrency) != null
-            ? `${toUAH(
-                discounted(selected.Price),
-                selected.PriceCurrency
-              ).toFixed(2)} грн`
-            : "—"}
-        </Descriptions.Item>
-        <Descriptions.Item label="Ціна гурт (оригінал)">
-          {typeof selected.WhPrice === "number"
-            ? `${selected.WhPrice.toFixed(2)} ${
-                selected.PriceCurrency || ""
-              }`.trim()
-            : "—"}
-        </Descriptions.Item>
+    // універсальна конвертація між валютами через грн
+    const convert = (amount, from, to) => {
+        if (amount == null) return null;
+        const uah = toUAH(amount, from);
+        if (uah == null) return null;
 
-        <Descriptions.Item label="Ціна гурт (грн)">
-          {toUAH(selected.WhPrice, selected.PriceCurrency) != null
-            ? `${toUAH(selected.WhPrice, selected.PriceCurrency).toFixed(
-                2
-              )} грн`
-            : "—"}
-        </Descriptions.Item>
-        <Descriptions.Item label="Валюта">
-          {selected.PriceCurrency || "—"}
-        </Descriptions.Item>
-        <Descriptions.Item label="Виробник">
-          {selected.ManufacturerName || "—"}
-        </Descriptions.Item>
-        <Descriptions.Item label="Кількість">
-          {selected.Amount}
-        </Descriptions.Item>
-        <Descriptions.Item label="Застарілий">
-          {selected.Obsolete ? <Tag color="red">Так</Tag> : <Tag>Ні</Tag>}
-        </Descriptions.Item>
-        <Descriptions.Item label="Black Friday">
-          {selected.BlackFriday ? <Tag color="green">Так</Tag> : <Tag>Ні</Tag>}
-        </Descriptions.Item>
-      </Descriptions>
-    </>
-  );
+        switch (to) {
+            case "UAH":
+                return uah;
+            case "USD":
+                return usdRate ? uah / usdRate : null;
+            case "EUR":
+                return eurRate ? uah / eurRate : null;
+            default:
+                return null;
+        }
+    };
+
+    const price = selected?.Price ?? null;
+    const actPrice = selected?.ActPrice ?? null;
+    const whPrice = typeof selected?.WhPrice === "number" ? selected.WhPrice : null;
+    const cur = selected?.PriceCurrency || "UAH";
+
+    // --- Таблиця: базові значення ---
+    const rows = [
+        {
+            key: "orig",
+            type: "Оригінальна ціна",
+            euro: convert(price, cur, "EUR"),
+            dollar: convert(price, cur, "USD"),
+            uah: convert(price, cur, "UAH"),
+        },
+        {
+            key: "wholesale",
+            type: "Гуртова ціна",
+            euro: convert(whPrice, cur, "EUR"),
+            dollar: convert(whPrice, cur, "USD"),
+            uah: convert(whPrice, cur, "UAH"),
+        },
+        {
+            key: "promo",
+            type: `Акційна ціна (з файлу)`,
+            euro: convert(actPrice, cur, "EUR"),
+            dollar: convert(actPrice, cur, "USD"),
+            uah: convert(actPrice, cur, "UAH"),
+        },
+    ];
+
+    const dataSource = rows.map((r) => ({
+        ...r,
+        euro: fmt(r.euro),
+        dollar: fmt(r.dollar),
+        uah: fmt(r.uah),
+    }));
+
+    // --- Таблиця: ціни зі знижкою (застосувати activeDiscount до кожної) ---
+    const rowsDiscounted = [
+        {
+            key: "orig-d",
+            type: `Оригінальна ціна (${activeDiscount || 0}%)`,
+            euro: convert(discounted(price), cur, "EUR"),
+            dollar: convert(discounted(price), cur, "USD"),
+            uah: convert(discounted(price), cur, "UAH"),
+        },
+        {
+            key: "wholesale-d",
+            type: `Гуртова ціна (${activeDiscount || 0}%)`,
+            euro: convert(discounted(whPrice), cur, "EUR"),
+            dollar: convert(discounted(whPrice), cur, "USD"),
+            uah: convert(discounted(whPrice), cur, "UAH"),
+        },
+        {
+            key: "promo-d",
+            type: `Акційна ціна (${activeDiscount || 0}%)`,
+            euro: convert(discounted(actPrice ?? price), cur, "EUR"),
+            dollar: convert(discounted(actPrice ?? price), cur, "USD"),
+            uah: convert(discounted(actPrice ?? price), cur, "UAH"),
+        },
+    ];
+
+    const dataSourceDiscounted = rowsDiscounted.map((r) => ({
+        ...r,
+        euro: fmt(r.euro),
+        dollar: fmt(r.dollar),
+        uah: fmt(r.uah),
+    }));
+
+    const columns = [
+        { title: " ", dataIndex: "type", key: "type" },
+        {
+            title: "Євро",
+            dataIndex: "euro",
+            key: "euro",
+            align: "right",
+            render: (val) => <SecureValue value={val} />,
+        },
+        {
+            title: "Долар",
+            dataIndex: "dollar",
+            key: "dollar",
+            align: "right",
+            render: (val) => <SecureValue value={val} />,
+        },
+        {
+            title: "Гривня",
+            dataIndex: "uah",
+            key: "uah",
+            align: "right",
+            render: (val) => <SecureValue value={val} />,
+        },
+    ];
+
+    return (
+        <>
+            {/* Таблиця без знижки (значення приховані до утримання кліку) */}
+            <Table
+                dataSource={dataSource}
+                columns={columns}
+                pagination={false}
+                bordered
+                size={isMobile ? "small" : "middle"}
+            />
+
+            <Divider style={{ margin: isMobile ? "8px 0" : "12px 0" }} />
+
+            {/* Таблиця зі знижкою (значення приховані до утримання кліку) */}
+            <Table
+                dataSource={dataSourceDiscounted}
+                columns={columns}
+                pagination={false}
+                bordered
+                size={isMobile ? "small" : "middle"}
+                title={() => `Ціни зі знижкою (${activeDiscount || 0}%)`}
+            />
+
+            <Descriptions
+                size="small"
+                column={isMobile ? 1 : 2}
+                bordered
+                labelStyle={{ width: 180 }}
+                style={{ wordBreak: "break-word", marginTop: 12 }}
+            >
+                <Descriptions.Item label="Артикул">
+                    {selected.BarCode || "—"}
+                </Descriptions.Item>
+                <Descriptions.Item label="Виробник">
+                    {selected.ManufacturerName || "—"}
+                </Descriptions.Item>
+                <Descriptions.Item label="Кількість">
+                    <SecureValue value={selected.Amount ?? "—"} />
+                </Descriptions.Item>
+                <Descriptions.Item label="Застарілий">
+                    {selected.Obsolete ? <Tag color="red">Так</Tag> : <Tag>Ні</Tag>}
+                </Descriptions.Item>
+                <Descriptions.Item label="Black Friday">
+                    {selected.BlackFriday ? <Tag color="green">Так</Tag> : <Tag>Ні</Tag>}
+                </Descriptions.Item>
+            </Descriptions>
+        </>
+    );
 }

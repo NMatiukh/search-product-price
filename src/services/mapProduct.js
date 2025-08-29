@@ -23,5 +23,6 @@ export function mapProduct(item, idx) {
         PriceCurrency: asText(item.PriceCurrency) || "",
         ManufacturerName: manufacturer,           // <-- завжди рядок, з плейсхолдером
         WhPrice: toNum(item.WhPrice),
+        ActPrice: toNum(item.ActPrice),
     };
 }

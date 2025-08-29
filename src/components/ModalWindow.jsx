@@ -41,6 +41,7 @@ export default function ModalWindow({
           isMobile={isMobile}
           activeDiscount={activeDiscount}
           toUAH={toUAH}
+          valueRate={valueRate}
         />
       )}
     </Modal>

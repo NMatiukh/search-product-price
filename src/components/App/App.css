@@ -106,3 +106,9 @@ mark {
     width: 100%;
     box-sizing: border-box;
 }
+
+/*.ant-descriptions-item-content, .ant-descriptions-item-label {*/
+/*    width: auto;*/
+/*    padding-right: 0 !important;*/
+/*    font-size: 12px !important*/
+/*}*/
