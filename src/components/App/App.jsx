@@ -1,18 +1,5 @@
 import {useCallback, useEffect, useMemo, useState} from "react";
-import {
-    //   Descriptions,
-    Divider,
-    Flex,
-    Grid,
-    //   Input,
-    InputNumber,
-    message,
-    Modal,
-    //   Select,
-    //   Table,
-    //   Tag,
-    //   Typography,
-} from "antd";
+import {Divider, Flex, Grid, message,} from "antd";
 import "./App.css";
 
 // імпорти з сервісів
@@ -21,15 +8,9 @@ import {findArrayOfObjects} from "../../services/findArrayOfObjects";
 import {asText} from "../../services/safeGetText";
 import {mapProduct} from "../../services/mapProduct";
 import {parseXmlToJson} from "../../services/parseXmlToJson";
-import {
-    FIELD_WEIGHTS,
-    normalize,
-    parseQuery,
-    scoreField,
-} from "../../services/searchUtils";
+import {FIELD_WEIGHTS, normalize, parseQuery, scoreField,} from "../../services/searchUtils";
 import SearchBar from "../SearchBar";
 import SelectOptions from "../SelectOptions";
-import CurrencyInput from "../CurrencyInput";
 import CurrencyBlock from "../CurrencyBlock";
 import ProductInfo from "../ProductInfo";
 import ModalWindow from "../ModalWindow";
@@ -47,6 +28,9 @@ export default function App() {
     const [searchValue, setSearchValue] = useState();
     const [rows, setRows] = useState([]);
     const [makerFilter, setMakerFilter] = useState();
+    // for loading
+    const [visibleCount, setVisibleCount] = useState(20);
+
     const manufacturers = useMemo(
         () =>
             Array.from(
@@ -252,6 +236,22 @@ export default function App() {
         },
         [usdRate, eurRate]
     );
+
+    // infinite scroll
+    const loadMore = () => setVisibleCount((prev) => prev + 20);
+    const visibleRows = displayRows.slice(0, visibleCount);
+
+    const handleScroll = (e) => {
+        const {scrollTop, scrollHeight, clientHeight} = e.target;
+        if (scrollTop + clientHeight >= scrollHeight - 10) {
+            loadMore();
+        }
+    };
+
+    useEffect(() => {
+        setVisibleCount(20);
+    }, [searchValue, makerFilter]);
+
     return (
         <Flex
             vertical
@@ -290,14 +290,19 @@ export default function App() {
                 <ProductInfo rows={rows} displayRows={displayRows}/>
             </Flex>
 
-            <TableColumns
-                highlightTokens={highlightTokens}
-                displayRows={displayRows}
-                setSelected={setSelected}
-                setOpenModal={setOpenModal}
-                isMobile={isMobile}
-                toUAH={toUAH}
-            />
+            <div style={{height: isMobile ? 400 : 600, overflowY: "auto"}} onScroll={handleScroll}>
+                <TableColumns
+                    highlightTokens={highlightTokens}
+                    displayRows={visibleRows}
+                    setSelected={setSelected}
+                    setOpenModal={setOpenModal}
+                    isMobile={isMobile}
+                    toUAH={toUAH}
+                />
+                {visibleCount < displayRows.length && (
+                    <div style={{textAlign: "center", padding: 16}}>Завантаження...</div>
+                )}
+            </div>
 
             <ModalWindow
                 selected={selected}

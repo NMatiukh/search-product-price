@@ -6,7 +6,7 @@ export default function TableColumns({
                                          displayRows,
                                          setSelected,
                                          setOpenModal,
-                                         isMobile,
+                                         // isMobile,
                                          highlightTokens,
                                          toUAH, // ⬅️ додали
                                      }) {
@@ -74,12 +74,14 @@ export default function TableColumns({
             scroll={{ x: "max-content" }}
             tableLayout="auto"
             sticky
-            pagination={{
-                size: isMobile ? "small" : "default",
-                pageSize: isMobile ? 10 : 20,
-                showSizeChanger: !isMobile,
-            }}
+            // pagination={{
+            //     size: isMobile ? "small" : "default",
+            //     pageSize: isMobile ? 10 : 20,
+            //     showSizeChanger: !isMobile,
+            // }}
+            pagination={false}
             style={{ width: "100%", fontSize: 12 }}
         />
     );
 }
+
