@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React from "react";
 import {Descriptions, Table, Tag, Divider} from "antd";
 import SecureValue from "./SecureValue.jsx";
 
