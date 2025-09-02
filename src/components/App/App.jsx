@@ -178,11 +178,11 @@ export default function App() {
     // *** КУРСИ ВАЛЮТ з localStorage ***
     const [usdRate, setUsdRate] = useState(() => {
         const v = localStorage.getItem("usdRate");
-        return v ? Number(v) : 0;
+        return v ? Number(v) : 41;
     });
     const [eurRate, setEurRate] = useState(() => {
         const v = localStorage.getItem("eurRate");
-        return v ? Number(v) : 0;
+        return v ? Number(v) : 50;
     });
     useEffect(() => {
         localStorage.setItem("usdRate", String(usdRate));
