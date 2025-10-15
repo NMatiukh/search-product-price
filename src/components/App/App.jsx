@@ -162,11 +162,11 @@ export default function App() {
     // *** КУРСИ ВАЛЮТ з localStorage ***
     const [usdRate, setUsdRate] = useState(() => {
         const v = localStorage.getItem("usdRate");
-        return v ? Number(v) : 41;
+        return v ? Number(v) : 42;
     });
     const [eurRate, setEurRate] = useState(() => {
         const v = localStorage.getItem("eurRate");
-        return v ? Number(v) : 50;
+        return v ? Number(v) : 48.9;
     });
     useEffect(() => {
         localStorage.setItem("usdRate", String(usdRate));
@@ -181,7 +181,7 @@ export default function App() {
             try {
                 // Файл лежить у src/data; генеруємо URL, щоб забрати його як байти
                 const fileUrl = new URL(
-                    "../../data/PriceApp_2025-08-20_N2.xml",
+                    "../../data/PriceApp.xml",
                     import.meta.url
                 );
                 const res = await fetch(fileUrl);
