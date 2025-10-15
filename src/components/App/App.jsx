@@ -168,12 +168,12 @@ export default function App() {
         const v = localStorage.getItem("eurRate");
         return v ? Number(v) : 48.9;
     });
-    useEffect(() => {
-        localStorage.setItem("usdRate", String(usdRate));
-    }, [usdRate]);
-    useEffect(() => {
-        localStorage.setItem("eurRate", String(eurRate));
-    }, [eurRate]);
+    // useEffect(() => {
+    //     localStorage.setItem("usdRate", String(usdRate));
+    // }, [usdRate]);
+    // useEffect(() => {
+    //     localStorage.setItem("eurRate", String(eurRate));
+    // }, [eurRate]);
 
     // === ЗАВАНТАЖЕННЯ XML З ПРОЄКТУ ===
     useEffect(() => {

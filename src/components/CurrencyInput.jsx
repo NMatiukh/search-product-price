@@ -13,6 +13,7 @@ export default function CurrencyInput({title, currencyRate, onChangeSetter, isMo
         placeholder="грн"
         size={isMobile ? "middle" : "large"}
         style={{ width: 110 }}
+        readOnly
       />
     </Flex>
   );
