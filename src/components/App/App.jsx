@@ -18,7 +18,9 @@ import TableColumns from "../TableColumns";
 import {cleanAndDecodeXml} from "../../services/cleanAndDecodeXml.js";
 
 const {useBreakpoint} = Grid;
-
+// Статичні курси валюти (без localStorage)
+const USD_RATE = 42;   // 1 USD = 42 UAH
+const EUR_RATE = 48.9; // 1 EUR = 48.9 UAH
 /* ---------- Компонент ---------- */
 export default function App() {
     const screens = useBreakpoint();
@@ -159,21 +161,6 @@ export default function App() {
     const [openModal, setOpenModal] = useState(false);
     const [selected, setSelected] = useState(null);
 
-    // *** КУРСИ ВАЛЮТ з localStorage ***
-    const [usdRate, setUsdRate] = useState(() => {
-        const v = localStorage.getItem("usdRate");
-        return v ? Number(v) : 42;
-    });
-    const [eurRate, setEurRate] = useState(() => {
-        const v = localStorage.getItem("eurRate");
-        return v ? Number(v) : 48.9;
-    });
-    // useEffect(() => {
-    //     localStorage.setItem("usdRate", String(usdRate));
-    // }, [usdRate]);
-    // useEffect(() => {
-    //     localStorage.setItem("eurRate", String(eurRate));
-    // }, [eurRate]);
 
     // === ЗАВАНТАЖЕННЯ XML З ПРОЄКТУ ===
     useEffect(() => {
@@ -226,15 +213,15 @@ export default function App() {
             const code = normalizeCurrency(cur);
             switch (code) {
                 case "USD":
-                    return usdRate ? amount * usdRate : null;
+                    return amount * USD_RATE;
                 case "EUR":
-                    return eurRate ? amount * eurRate : null;
+                    return amount * EUR_RATE;
                 case "UAH":
                 default:
                     return amount;
             }
         },
-        [usdRate, eurRate]
+        []
     );
 
     // infinite scroll
@@ -282,8 +269,8 @@ export default function App() {
                 />
 
                 <CurrencyBlock
-                    valueRate={{usdRate, eurRate}}
-                    onChangeSetter={{setEurRate, setUsdRate}}
+                    valueRate={{usdRate: USD_RATE, eurRate: EUR_RATE}}
+                    onChangeSetter={{ setUsdRate: () => {}, setEurRate: () => {} }}
                     isMobile={isMobile}
                 />
 
@@ -310,7 +297,7 @@ export default function App() {
                 openModal={openModal}
                 setOpenModal={setOpenModal}
                 activeDiscount={activeDiscount}
-                valueRate={{usdRate, eurRate}}
+                valueRate={{usdRate: USD_RATE, eurRate: EUR_RATE}}
             />
         </Flex>
     );
