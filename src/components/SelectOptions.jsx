@@ -14,7 +14,11 @@ export default function SelectOptions({
   return (
     <>
       <Select
-        allowClear
+          allowClear={{
+            clearIcon: <div style={{color: "red", cursor: "pointer", position: "absolute", right: 10, height: "100%"}}>
+              очистити
+            </div>,
+          }}
         placeholder={placeholder}
         value={value}
         options={isOptions}
