@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {Descriptions, Table, Tag, Divider} from "antd";
 import SecureValue from "./SecureValue.jsx";
 
@@ -9,6 +9,12 @@ export default function ModalContent({
                                          toUAH,
                                          valueRate, // { usdRate, eurRate }
                                      }) {
+    const [wholesaleVisible, setWholesaleVisible] = useState(false);
+
+    useEffect(() => {
+        setWholesaleVisible(false);
+    }, [selected?.key]);
+
     const usdRate = valueRate?.usdRate ?? 0;
     const eurRate = valueRate?.eurRate ?? 0;
 
@@ -39,36 +45,56 @@ export default function ModalContent({
     const actPrice = selected?.ActPrice ?? null;
     const whPrice = typeof selected?.WhPrice === "number" ? selected.WhPrice : null;
     const cur = selected?.PriceCurrency || "UAH";
+    const exactPrices = selected?.PriceList ?? null;
+    const priceRow = (group, fallback) => {
+        const exact = exactPrices?.[group];
+        if (exact) {
+            return {euro: exact.eur, dollar: exact.usd, uah: exact.uah};
+        }
+        return {
+            euro: convert(fallback, cur, "EUR"),
+            dollar: convert(fallback, cur, "USD"),
+            uah: convert(fallback, cur, "UAH"),
+        };
+    };
+    const retail = priceRow("retail", price);
+    const promo = priceRow("promo", actPrice);
+    const wholesale = priceRow("wholesale", whPrice);
+    const retailUah = retail.uah;
+    const wholesaleUah = wholesale.uah;
+    const wholesalePercent =
+        typeof retailUah === "number" && retailUah > 0 && typeof wholesaleUah === "number"
+            ? (wholesaleUah / retailUah) * 100
+            : null;
+    const wholesaleLabel = Number.isFinite(wholesalePercent)
+        ? `Ціна Г (${new Intl.NumberFormat("uk-UA", {
+            maximumFractionDigits: 1,
+        }).format(wholesalePercent)}% від роздрібної)`
+        : "Ціна Г";
 
     // --- Таблиця: значення ---
     const rows = [
         {
             key: "orig",
             type: "Ціна",
-            euro: convert(price, cur, "EUR"),
-            dollar: convert(price, cur, "USD"),
-            uah: convert(price, cur, "UAH"),
+            ...retail,
         },
         {
             key: "promo",
             type: "Ціна А",
-            euro: convert(actPrice, cur, "EUR"),
-            dollar: convert(actPrice, cur, "USD"),
-            uah: convert(actPrice, cur, "UAH"),
+            ...promo,
         },
         {
             key: "wholesale", // ← гуртова (єдина заблюрена)
-            type: "Ціна Г",
-            euro: convert(whPrice, cur, "EUR"),
-            dollar: convert(whPrice, cur, "USD"),
-            uah: convert(whPrice, cur, "UAH"),
+            type: wholesaleLabel,
+            ...wholesale,
         },
         {
             key: "orig-d",
             type: `Ціна (${activeDiscount || 0}%)`,
-            euro: convert(discounted(price), cur, "EUR"),
-            dollar: convert(discounted(price), cur, "USD"),
-            uah: convert(discounted(price), cur, "UAH"),
+            euro: discounted(retail.euro),
+            dollar: discounted(retail.dollar),
+            uah: discounted(retail.uah),
         },
     ];
 
@@ -79,9 +105,13 @@ export default function ModalContent({
         uah: fmt(r.uah),
     }));
 
-    // Рендеримо SecureValue ТІЛЬКИ для рядка key === 'wholesale'
+    // Увесь рядок гуртової ціни відкривається одним кліком.
     const blurIfWholesale = (val, record) =>
-        record.key === "wholesale" ? <SecureValue value={val}/> : <div style={{padding: 8}}>{val}</div>;
+        record.key === "wholesale" && val !== "—"
+            ? <span className={wholesaleVisible ? "wholesale-value is-visible" : "wholesale-value"}>
+                {val}
+            </span>
+            : <div style={{padding: 8}}>{val}</div>;
 
     const columns = [
         {title: " ", dataIndex: "type", key: "type"},
@@ -118,6 +148,23 @@ export default function ModalContent({
                 size={isMobile ? "small" : "middle"}
                 className={"tight-table price-detail-table"}
                 scroll={{x: 420}}
+                rowClassName={(record) => record.key === "wholesale" ? "wholesale-row" : ""}
+                onRow={(record) => record.key === "wholesale"
+                    ? {
+                        role: "button",
+                        tabIndex: 0,
+                        "aria-label": wholesaleVisible
+                            ? "Приховати гуртову ціну"
+                            : "Показати гуртову ціну",
+                        onClick: () => setWholesaleVisible((visible) => !visible),
+                        onKeyDown: (event) => {
+                            if (event.key === "Enter" || event.key === " ") {
+                                event.preventDefault();
+                                setWholesaleVisible((visible) => !visible);
+                            }
+                        },
+                    }
+                    : {}}
             />
 
             <Divider style={{margin: isMobile ? "8px 0" : "12px 0"}}/>

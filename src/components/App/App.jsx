@@ -16,11 +16,14 @@ import ProductInfo from "../ProductInfo";
 import ModalWindow from "../ModalWindow";
 import TableColumns from "../TableColumns";
 import {cleanAndDecodeXml} from "../../services/cleanAndDecodeXml.js";
+import priceListPrices from "../../data/priceListPrices.json";
 
 const {useBreakpoint} = Grid;
 // Статичні курси валюти (без localStorage)
 const USD_RATE = 45.1; // 1 USD = 45.1 UAH
 const EUR_RATE = 50.8; // 1 EUR = 50.8 UAH
+const normalizeArticle = (value) =>
+    String(value ?? "").trim().replace(/[\s.]+$/g, "").toUpperCase();
 /* ---------- Компонент ---------- */
 export default function App() {
     const screens = useBreakpoint();
@@ -180,7 +183,14 @@ export default function App() {
                     );
                 const json = parseXmlToJson(text);
                 const arr = findArrayOfObjects(json) || [];
-                const mapped = arr.map((x, i) => mapProduct(x, i));
+                const mapped = arr.map((x, i) => {
+                    const product = mapProduct(x, i);
+                    const priceList =
+                        priceListPrices[normalizeArticle(product.BarCode)] ||
+                        priceListPrices[normalizeArticle(product.Code)] ||
+                        null;
+                    return {...product, PriceList: priceList};
+                });
                 setRows(mapped.map(value => ({...value, Name: cleanAndDecodeXml(value.Name)})));
                 // setRows(mapped);
             } catch (e) {
@@ -243,24 +253,24 @@ export default function App() {
         <main className="app-shell">
             <header className="catalog-header">
                 <div className="catalog-kicker">
-                    <span>ТОРГОВИЙ БЮЛЕТЕНЬ</span>
-                    <span>ВИПУСК № 01</span>
+                    <span>ПРАЙС-КАТАЛОГ</span>
+                    <span>PREMIER DENTAL</span>
                 </div>
                 <div className="catalog-title-row">
                     <div>
-                        <p className="catalog-eyebrow">Електронна картотека товарів</p>
+                        <p className="catalog-eyebrow">Швидкий пошук товарів</p>
                         <h1>Пошук цін</h1>
                     </div>
                     <div className="catalog-stamp" aria-label="Актуальний каталог">
-                        <span>КАТАЛОГ</span>
+                        <span>АКТУАЛЬНО</span>
                         <strong>2026</strong>
                     </div>
                 </div>
-                <p className="catalog-subtitle">Артикул · виробник · наявність · ціна</p>
+                <p className="catalog-subtitle">Артикул / виробник / наявність / ціна</p>
             </header>
 
             <section className="control-panel" aria-label="Пошук і фільтри">
-                <div className="section-label"><span>01</span> Пошук у картотеці</div>
+                <div className="section-label"><span>01</span> Пошук і фільтри</div>
                 <div className="search-row">
                     <SearchBar onSearch={setSearchValue} isMobile={isMobile}/>
                 </div>
@@ -300,7 +310,7 @@ export default function App() {
 
             <section className="results-panel">
                 <div className="section-label section-label--results">
-                    <span>02</span> Реєстр товарів
+                    <span>02</span> Результати
                     <small>Натисніть на рядок, щоб переглянути деталі</small>
                 </div>
                 <div className="table-scroll" onScroll={handleScroll}>
@@ -313,14 +323,14 @@ export default function App() {
                     toUAH={toUAH}
                 />
                 {visibleCount < displayRows.length && (
-                    <div className="loading-more">··· завантаження карток ···</div>
+                    <div className="loading-more">ЗАВАНТАЖУЄМО ЩЕ ↓</div>
                 )}
                 </div>
             </section>
 
             <footer className="catalog-footer">
-                <span>PRICE ARCHIVE</span>
-                <span>СИСТЕМА ОБЛІКУ · UA</span>
+                <span>PRICE SEARCH</span>
+                <span>PREMIER DENTAL · UA</span>
             </footer>
 
             <ModalWindow

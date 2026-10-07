@@ -25,8 +25,11 @@ export default function TableColumns({
                 title: "Назва",
                 dataIndex: "Name",
                 key: "Name",
-                ellipsis: true,
-                render: (val) => highlightText(val, highlightTokens),
+                render: (val) => (
+                    <span className="product-name-cell">
+                        {highlightText(val, highlightTokens)}
+                    </span>
+                ),
             },
             {
                 title: "Ціна (грн)",
@@ -35,8 +38,11 @@ export default function TableColumns({
                 align: "right",
                 width: 120,
                 render: (val, record) => {
+                    const exactUah = record?.PriceList?.retail?.uah;
                     const amount = typeof val === "number" ? val : Number(val);
-                    const uah = toUAH?.(amount, record?.PriceCurrency || "UAH");
+                    const uah = typeof exactUah === "number"
+                        ? exactUah
+                        : toUAH?.(amount, record?.PriceCurrency || "UAH");
                     return uah != null && Number.isFinite(uah)
                         ? new Intl.NumberFormat("uk-UA", {
                             style: "currency",
@@ -65,14 +71,14 @@ export default function TableColumns({
                 style: {
                     cursor: "pointer",
                     backgroundColor: record.Obsolete
-                        ? "#f5f5f5"
+                        ? "#dddddd"
                         : Number(record.Amount) <= 0
-                            ? "#fff1f0"
+                            ? "#ffd8e1"
                             : undefined,
                 },
             })}
-            scroll={{ x: "max-content" }}
-            tableLayout="auto"
+            scroll={{ x: 620 }}
+            tableLayout="fixed"
             sticky
             // pagination={{
             //     size: isMobile ? "small" : "default",
