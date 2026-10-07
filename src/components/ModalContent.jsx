@@ -62,14 +62,14 @@ export default function ModalContent({
     const wholesale = priceRow("wholesale", whPrice);
     const retailUah = retail.uah;
     const wholesaleUah = wholesale.uah;
-    const wholesalePercent =
+    const wholesaleMarkupPercent =
         typeof retailUah === "number" && retailUah > 0 && typeof wholesaleUah === "number"
-            ? (wholesaleUah / retailUah) * 100
+            ? ((retailUah - wholesaleUah) / retailUah) * 100
             : null;
-    const wholesaleLabel = Number.isFinite(wholesalePercent)
+    const wholesaleLabel = Number.isFinite(wholesaleMarkupPercent)
         ? `Ціна Г (${new Intl.NumberFormat("uk-UA", {
             maximumFractionDigits: 1,
-        }).format(wholesalePercent)}% від роздрібної)`
+        }).format(wholesaleMarkupPercent)}% націнки від роздрібної)`
         : "Ціна Г";
 
     // --- Таблиця: значення ---
