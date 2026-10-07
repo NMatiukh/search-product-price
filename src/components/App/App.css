@@ -76,7 +76,11 @@ mark { padding: 1px 2px; color: #211d17; background: #e7b957; border-bottom: 1px
 .retro-modal .ant-modal-content { border: 2px solid #315b58; border-radius: 0; box-shadow: 8px 8px 0 rgba(24, 44, 41, .45); }
 .retro-modal .ant-modal-title { padding-right: 28px; color: #315b58; font-family: "Special Elite", "Courier Prime", monospace; font-size: 21px; line-height: 1.25; }
 .retro-modal .ant-modal-header { padding-bottom: 12px; border-bottom: 3px double #756b58; }
-.retro-modal .ant-modal-footer { border-top: 1px dashed #8f836b; }
+.retro-modal .ant-modal-footer {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px dashed #8f836b;
+}
 .retro-modal .ant-btn, .retro-modal .ant-modal-close { border-radius: 0; }
 .price-detail-table .ant-table, .retro-descriptions .ant-descriptions-view { border-radius: 0 !important; border-color: #817762 !important; }
 .price-detail-table .ant-table-thead > tr > th { background: #315b58 !important; color: #fff8e8 !important; }
