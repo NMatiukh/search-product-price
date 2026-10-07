@@ -80,8 +80,8 @@ export default function TableColumns({
             //     showSizeChanger: !isMobile,
             // }}
             pagination={false}
+            className="catalog-table"
             style={{ width: "100%", fontSize: 12 }}
         />
     );
 }
-

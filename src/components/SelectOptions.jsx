@@ -14,6 +14,7 @@ export default function SelectOptions({
   return (
     <>
       <Select
+        className="retro-select"
           allowClear={{
             clearIcon: <div style={{color: "red", cursor: "pointer", position: "absolute", right: 10, height: 32}}>
               очистити

@@ -1,124 +1,109 @@
-/* =============== Base =============== */
-html, body, #root {
-    height: 100%;
+html, body, #root { min-height: 100%; }
+#root { width: 100%; }
+
+.app-shell {
+    position: relative;
+    width: min(1240px, calc(100% - 32px));
+    min-height: calc(100vh - 32px);
+    margin: 16px auto;
+    padding: 24px;
+    overflow: hidden;
+    background-color: #eee2c8;
+    background-image: linear-gradient(rgba(71, 61, 43, .035) 1px, transparent 1px), linear-gradient(90deg, rgba(71, 61, 43, .025) 1px, transparent 1px);
+    background-size: 5px 5px;
+    border: 1px solid #d1c19f;
+    box-shadow: 0 18px 48px rgba(9, 20, 18, .42), 8px 8px 0 #172a27;
 }
 
-body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
-    Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+.app-shell::before {
+    content: "";
+    position: absolute;
+    inset: 9px;
+    border: 1px solid rgba(69, 62, 48, .35);
+    pointer-events: none;
 }
 
-#root {
-    margin: 0 auto;
-    max-width: 1200px;
-    padding: 8px 12px;
-    text-align: left; /* важливо: не центруємо контент */
-}
+.catalog-header { position: relative; z-index: 1; padding: 8px 8px 18px; border-bottom: 4px double #2d3c39; }
+.catalog-kicker, .catalog-footer { display: flex; justify-content: space-between; gap: 16px; color: #686052; font-size: 11px; font-weight: 700; letter-spacing: .15em; }
+.catalog-title-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; padding-top: 24px; }
+.catalog-eyebrow { margin: 0 0 5px; color: #b2432f; font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+.catalog-title-row h1 { margin: 0; color: #253936; font-family: "Special Elite", "Courier Prime", monospace; font-size: clamp(44px, 8vw, 86px); font-weight: 400; line-height: .88; letter-spacing: -.055em; text-transform: uppercase; text-shadow: 1px 1px 0 rgba(178, 67, 47, .18); }
+.catalog-subtitle { margin: 16px 0 0; color: #5c5549; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; }
 
-/* Підсвітка збігів у пошуку */
-mark {
-    background: #fff2be;
-    color: inherit;
-    padding: 0 2px;
-    border-radius: 2px;
-}
+.catalog-stamp { width: 112px; height: 76px; display: grid; place-content: center; flex: 0 0 auto; color: #b2432f; border: 3px double #b2432f; transform: rotate(3deg); text-align: center; line-height: 1; }
+.catalog-stamp span { font-size: 10px; letter-spacing: .18em; }
+.catalog-stamp strong { margin-top: 5px; font-size: 25px; letter-spacing: .08em; }
 
-/* =============== Table (AntD) =============== */
-/* Вимкнути авто-збільшення шрифтів у таблицях на мобільних браузерах */
-.ant-table-wrapper {
-    -webkit-text-size-adjust: none;
-    text-size-adjust: none;
-}
+.control-panel, .results-panel { position: relative; z-index: 1; margin-top: 18px; background: rgba(249, 242, 222, .64); border: 1px solid #817762; box-shadow: 4px 4px 0 rgba(68, 82, 76, .16); }
+.control-panel { padding: 18px; }
+.section-label { display: flex; align-items: center; gap: 9px; margin-bottom: 14px; color: #315b58; font-size: 13px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.section-label > span { display: inline-grid; width: 28px; height: 23px; place-items: center; color: #fff8e8; background: #b2432f; font-size: 11px; }
+.section-label small { margin-left: auto; color: #756d5e; font-size: 10px; font-weight: 400; letter-spacing: .05em; }
+.search-row { display: flex; }
 
-/* Базовий розмір шрифту в таблиці */
-.ant-table-wrapper .ant-table {
-    font-size: 12px;
-    line-height: 1.4;
-}
+.retro-search.ant-input-affix-wrapper { min-height: 50px; padding-inline: 15px; background: #fffaf0; border: 2px solid #315b58; border-radius: 0; box-shadow: inset 0 -2px 0 rgba(49, 91, 88, .1); }
+.retro-search .search-icon { color: #b2432f; font-size: 18px; }
+.retro-search input::placeholder { color: #8b816f; }
+.filter-row { margin-top: 11px; }
+.filter-row > .retro-select { width: auto !important; min-width: 190px; }
+.filter-row > .retro-select:nth-of-type(2) { flex: 1 1 230px; }
+.retro-select .ant-select-selector, .currency-input.ant-input-number { background: #f7efd9 !important; border: 1px solid #716957 !important; border-radius: 0 !important; box-shadow: none !important; }
+.retro-select.ant-select-focused .ant-select-selector, .currency-input.ant-input-number-focused { border-color: #315b58 !important; box-shadow: 2px 2px 0 rgba(49, 91, 88, .22) !important; }
 
-/* Успадковуємо 12px для заголовка та комірок */
-.ant-table-wrapper .ant-table-thead > tr > th,
-.ant-table-wrapper .ant-table-tbody > tr > td {
-    font-size: inherit;
-}
+.currency-block { min-height: 42px; padding: 4px 7px; background: rgba(49, 91, 88, .075); border: 1px dashed #7c725f; }
+.currency-code { color: #b2432f; font-size: 11px; font-weight: 700; }
+.product-count { padding: 7px 10px; color: #315b58 !important; border-bottom: 1px solid #315b58; font-size: 11px; font-weight: 700; white-space: nowrap; }
 
-/* Тонкі роздільники — чистіший вигляд */
-.ant-table-wrapper .ant-table-tbody > tr > td {
-    border-color: #f0f0f0;
-}
+.results-panel { padding: 18px 18px 0; }
+.table-scroll { height: min(58vh, 620px); overflow-y: auto; scrollbar-color: #b2432f #dfd1b2; }
+.catalog-table .ant-table { border: 1px solid #625c4e; border-radius: 0 !important; background: #f5ecd5; font-size: 12px; }
+.catalog-table .ant-table-container, .catalog-table .ant-table-thead > tr:first-child > *:first-child, .catalog-table .ant-table-thead > tr:first-child > *:last-child { border-radius: 0 !important; }
+.catalog-table .ant-table-thead > tr > th { padding: 11px 12px; font-size: 11px; letter-spacing: .09em; text-transform: uppercase; }
+.catalog-table .ant-table-tbody > tr > td { padding: 9px 12px; border-color: #c7b998; }
+.catalog-table .ant-table-tbody > tr:nth-child(even) > td { background-color: rgba(131, 112, 75, .065); }
+.catalog-table .ant-table-tbody > tr:hover > td { background: #ead6a8 !important; cursor: pointer; }
+.catalog-table .ant-table-tbody > tr:active > td { background: #dfc48c !important; }
+mark { padding: 1px 2px; color: #211d17; background: #e7b957; border-bottom: 1px solid #b2432f; }
+.loading-more { padding: 14px; color: #756b58; font-size: 11px; letter-spacing: .14em; text-align: center; text-transform: uppercase; }
+.catalog-footer { position: relative; z-index: 1; margin-top: 20px; padding: 11px 7px 0; border-top: 1px solid #8e836c; }
 
-/* Клік по рядку виглядає як активний */
-.ant-table-wrapper .ant-table-tbody > tr:hover > td {
-    background: #fafafa;
-    cursor: pointer;
-}
+.retro-modal .ant-modal-content { border: 2px solid #315b58; border-radius: 0; box-shadow: 8px 8px 0 rgba(24, 44, 41, .45); }
+.retro-modal .ant-modal-title { padding-right: 28px; color: #315b58; font-family: "Special Elite", "Courier Prime", monospace; font-size: 21px; line-height: 1.25; }
+.retro-modal .ant-modal-header { padding-bottom: 12px; border-bottom: 3px double #756b58; }
+.retro-modal .ant-modal-footer { border-top: 1px dashed #8f836b; }
+.retro-modal .ant-btn, .retro-modal .ant-modal-close { border-radius: 0; }
+.price-detail-table .ant-table, .retro-descriptions .ant-descriptions-view { border-radius: 0 !important; border-color: #817762 !important; }
+.price-detail-table .ant-table-thead > tr > th { background: #315b58 !important; color: #fff8e8 !important; }
+.retro-descriptions .ant-descriptions-item-label { background: #ded0b1 !important; color: #315b58 !important; font-weight: 700; }
+.retro-descriptions .ant-descriptions-item-content { background: #f7efd9 !important; }
 
-/* =============== Descriptions (модалка) =============== */
-.ant-descriptions-bordered .ant-descriptions-item-label {
-    width: 180px;
-    background: #fafafa;
-}
-
-/* =============== Forms (Input / Select / Number) =============== */
-/* iOS/Chrome iOS/Android: щоб не зумило екран при фокусі — 16px+ */
 @media (max-width: 768px) {
-    .ant-input,
-    .ant-input-affix-wrapper,
-    .ant-input-affix-wrapper input,
-    .ant-select-selector,
-    .ant-select-selection-item,
-    .ant-select-selection-placeholder,
-    .ant-select-selection-search-input,
-    .ant-input-number,
-    .ant-input-number-input {
-        font-size: 16px !important;
-    }
+    .app-shell { width: calc(100% - 12px); min-height: calc(100vh - 12px); margin: 6px auto; padding: 16px 12px; box-shadow: 3px 3px 0 #172a27; }
+    .app-shell::before { inset: 5px; }
+    .catalog-header { padding: 5px 4px 14px; }
+    .catalog-kicker { font-size: 9px; }
+    .catalog-title-row { align-items: center; padding-top: 19px; }
+    .catalog-title-row h1 { font-size: clamp(40px, 15vw, 62px); }
+    .catalog-eyebrow { font-size: 9px; }
+    .catalog-stamp { width: 72px; height: 58px; border-width: 2px; }
+    .catalog-stamp strong { font-size: 17px; }
+    .catalog-subtitle { font-size: 9px; letter-spacing: .09em; }
+    .control-panel, .results-panel { margin-top: 12px; }
+    .control-panel { padding: 13px; }
+    .results-panel { padding: 13px 8px 0; }
+    .section-label small { display: none; }
+    .filter-row > .retro-select { width: 100% !important; }
+    .currency-block { width: 100%; justify-content: space-between; }
+    .product-count { width: 100%; margin-left: 0 !important; text-align: center; }
+    .table-scroll { height: 56vh; }
+    .catalog-table .ant-table { font-size: 11px; }
+    .catalog-table .ant-table-thead > tr > th, .catalog-table .ant-table-tbody > tr > td { padding: 8px 9px; }
+    .catalog-footer { font-size: 8px; }
+    .ant-input, .ant-input-affix-wrapper input, .ant-select-selection-item, .ant-select-selection-placeholder, .ant-select-selection-search-input, .ant-input-number-input { font-size: 16px !important; }
+    .retro-modal { max-width: calc(100vw - 12px); margin: 6px auto; top: 6px; }
+    .retro-modal .ant-modal-content { padding: 15px 10px; }
 }
 
-/* На десктопі залишаємо стандартний розмір AntD */
-@media (min-width: 769px) {
-    .ant-input,
-    .ant-input-affix-wrapper,
-    .ant-input-affix-wrapper input,
-    .ant-select-selector,
-    .ant-select-selection-item,
-    .ant-select-selection-placeholder,
-    .ant-select-selection-search-input,
-    .ant-input-number,
-    .ant-input-number-input {
-        font-size: 14px;
-    }
-}
-
-/* =============== Misc =============== */
-/* Зменшуємо відступи між блоками зверху/знизу */
-.ant-divider {
-    margin: 8px 0;
-}
-
-/* Щоб дрібні елементи не роздувалися на мобільному */
-.ant-input-number,
-.ant-select,
-.ant-input {
-    width: 100%;
-    box-sizing: border-box;
-}
-
-/*.ant-descriptions-item-content, .ant-descriptions-item-label {*/
-/*    width: auto;*/
-/*    padding-right: 0 !important;*/
-/*    font-size: 12px !important*/
-/*}*/
-/* глобальний CSS */
-.tight-table .ant-table-tbody > tr > td,
-.tight-table .ant-table-thead > tr > th {
-    padding: 0 !important;
-
-}
-
-.ant-descriptions-item-content.test-class-name {
-    padding: 0 !important;
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
 }

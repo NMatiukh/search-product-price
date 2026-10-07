@@ -116,7 +116,7 @@ export default function ModalContent({
                 pagination={false}
                 bordered
                 size={isMobile ? "small" : "middle"}
-                className={"tight-table"}
+                className={"tight-table price-detail-table"}
             />
 
             <Divider style={{margin: isMobile ? "8px 0" : "12px 0"}}/>
@@ -126,6 +126,7 @@ export default function ModalContent({
                 column={isMobile ? 1 : 2}
                 bordered
                 labelStyle={{width: 180}}
+                className="retro-descriptions"
                 style={{wordBreak: "break-word", marginTop: 12}}
             >
                 <Descriptions.Item label="Артикул">

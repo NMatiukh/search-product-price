@@ -1,5 +1,5 @@
 import {useCallback, useEffect, useMemo, useState} from "react";
-import {Divider, Flex, Grid, message,} from "antd";
+import {Flex, Grid, message,} from "antd";
 import "./App.css";
 
 // імпорти з сервісів
@@ -240,15 +240,31 @@ export default function App() {
     }, [searchValue, makerFilter]);
 
     return (
-        <Flex
-            vertical
-            gap={isMobile ? 8 : 12}
-            style={{padding: isMobile ? 8 : 16, maxWidth: 1200, margin: "0 auto"}}
-        >
-            <Divider style={{margin: isMobile ? "8px 0" : "12px 0"}}/>
+        <main className="app-shell">
+            <header className="catalog-header">
+                <div className="catalog-kicker">
+                    <span>ТОРГОВИЙ БЮЛЕТЕНЬ</span>
+                    <span>ВИПУСК № 01</span>
+                </div>
+                <div className="catalog-title-row">
+                    <div>
+                        <p className="catalog-eyebrow">Електронна картотека товарів</p>
+                        <h1>Пошук цін</h1>
+                    </div>
+                    <div className="catalog-stamp" aria-label="Актуальний каталог">
+                        <span>КАТАЛОГ</span>
+                        <strong>2026</strong>
+                    </div>
+                </div>
+                <p className="catalog-subtitle">Артикул · виробник · наявність · ціна</p>
+            </header>
 
-            <Flex gap={8} align="center" wrap style={{rowGap: 8}}>
-                <SearchBar onSearch={setSearchValue} isMobile={isMobile}/>
+            <section className="control-panel" aria-label="Пошук і фільтри">
+                <div className="section-label"><span>01</span> Пошук у картотеці</div>
+                <div className="search-row">
+                    <SearchBar onSearch={setSearchValue} isMobile={isMobile}/>
+                </div>
+                <Flex className="filter-row" gap={10} align="center" wrap>
 
                 <SelectOptions
                     placeholder="Виберіть знижку"
@@ -270,14 +286,24 @@ export default function App() {
 
                 <CurrencyBlock
                     valueRate={{usdRate: USD_RATE, eurRate: EUR_RATE}}
-                    onChangeSetter={{ setUsdRate: () => {}, setEurRate: () => {} }}
+                    onChangeSetter={{
+                        setUsdRate: () => {
+                        }, setEurRate: () => {
+                        }
+                    }}
                     isMobile={isMobile}
                 />
 
-                <ProductInfo rows={rows} displayRows={displayRows}/>
-            </Flex>
+                    <ProductInfo rows={rows} displayRows={displayRows}/>
+                </Flex>
+            </section>
 
-            <div style={{height: isMobile ? 400 : 600, overflowY: "auto"}} onScroll={handleScroll}>
+            <section className="results-panel">
+                <div className="section-label section-label--results">
+                    <span>02</span> Реєстр товарів
+                    <small>Натисніть на рядок, щоб переглянути деталі</small>
+                </div>
+                <div className="table-scroll" onScroll={handleScroll}>
                 <TableColumns
                     highlightTokens={highlightTokens}
                     displayRows={visibleRows}
@@ -287,9 +313,15 @@ export default function App() {
                     toUAH={toUAH}
                 />
                 {visibleCount < displayRows.length && (
-                    <div style={{textAlign: "center", padding: 16}}>Завантаження...</div>
+                    <div className="loading-more">··· завантаження карток ···</div>
                 )}
-            </div>
+                </div>
+            </section>
+
+            <footer className="catalog-footer">
+                <span>PRICE ARCHIVE</span>
+                <span>СИСТЕМА ОБЛІКУ · UA</span>
+            </footer>
 
             <ModalWindow
                 selected={selected}
@@ -299,6 +331,6 @@ export default function App() {
                 activeDiscount={activeDiscount}
                 valueRate={{usdRate: USD_RATE, eurRate: EUR_RATE}}
             />
-        </Flex>
+        </main>
     );
 }

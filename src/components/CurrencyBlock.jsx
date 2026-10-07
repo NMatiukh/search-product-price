@@ -3,7 +3,7 @@ import CurrencyInput from "./CurrencyInput";
 
 export default function CurrencyBlock({ valueRate, onChangeSetter, isMobile }) {
   return (
-    <Flex align="center" gap={6} style={{ flexWrap: "wrap" }}>
+    <Flex className="currency-block" align="center" gap={6} style={{ flexWrap: "wrap" }}>
       <CurrencyInput
         title="USD"
         currencyRate={valueRate.usdRate}

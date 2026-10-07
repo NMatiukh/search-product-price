@@ -23,6 +23,7 @@ export default function ModalWindow({
 
     return (
         <Modal
+            className="retro-modal"
             title={
                 selected
                     ? selected.Name || selected.BarCode || "Деталі товару"
