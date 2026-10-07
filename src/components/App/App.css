@@ -50,6 +50,11 @@ html, body, #root { min-height: 100%; }
 .filter-row > .retro-select:nth-of-type(2) { flex: 1 1 230px; }
 .retro-select .ant-select-selector, .currency-input.ant-input-number { background: #f7efd9 !important; border: 1px solid #716957 !important; border-radius: 0 !important; box-shadow: none !important; }
 .retro-select.ant-select-focused .ant-select-selector, .currency-input.ant-input-number-focused { border-color: #315b58 !important; box-shadow: 2px 2px 0 rgba(49, 91, 88, .22) !important; }
+.select-clear-icon { color: #b2432f; font-size: 14px; }
+.ant-select-dropdown { padding: 5px; background: #f4ecd8; border: 1px solid #716957; border-radius: 0; box-shadow: 4px 4px 0 rgba(49, 91, 88, .25); }
+.ant-select-dropdown .ant-select-item { border-radius: 0; }
+.ant-select-dropdown .ant-select-item-option-active:not(.ant-select-item-option-disabled) { background: #ead6a8; }
+.ant-select-dropdown .ant-select-item-option-selected:not(.ant-select-item-option-disabled) { color: #fff8e8; background: #315b58; font-weight: 700; }
 
 .currency-block { min-height: 42px; padding: 4px 7px; background: rgba(49, 91, 88, .075); border: 1px dashed #7c725f; }
 .currency-code { color: #b2432f; font-size: 11px; font-weight: 700; }
@@ -104,6 +109,22 @@ mark { padding: 1px 2px; color: #211d17; background: #e7b957; border-bottom: 1px
     .ant-input, .ant-input-affix-wrapper input, .ant-select-selection-item, .ant-select-selection-placeholder, .ant-select-selection-search-input, .ant-input-number-input { font-size: 16px !important; }
     .retro-modal { max-width: calc(100vw - 12px); margin: 6px auto; top: 6px; }
     .retro-modal .ant-modal-content { padding: 15px 10px; }
+}
+
+@media (max-width: 520px) {
+    .catalog-title-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
+    .catalog-title-row h1 { font-size: clamp(34px, 12.5vw, 52px); letter-spacing: -.065em; }
+    .catalog-stamp { width: 60px; height: 50px; }
+    .catalog-stamp span { font-size: 7px; }
+    .catalog-stamp strong { font-size: 15px; }
+    .catalog-kicker, .catalog-footer { gap: 8px; letter-spacing: .08em; }
+    .catalog-kicker span:last-child, .catalog-footer span:last-child { text-align: right; }
+    .catalog-subtitle { line-height: 1.5; }
+    .currency-item { flex: 1 1 110px; }
+    .currency-input.ant-input-number { width: 100% !important; }
+    .price-detail-table .ant-table { font-size: 11px; }
+    .price-detail-table .ant-table-thead > tr > th,
+    .price-detail-table .ant-table-tbody > tr > td { padding: 7px 8px !important; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -117,6 +117,7 @@ export default function ModalContent({
                 bordered
                 size={isMobile ? "small" : "middle"}
                 className={"tight-table price-detail-table"}
+                scroll={{x: 420}}
             />
 
             <Divider style={{margin: isMobile ? "8px 0" : "12px 0"}}/>
@@ -125,7 +126,7 @@ export default function ModalContent({
                 size="small"
                 column={isMobile ? 1 : 2}
                 bordered
-                labelStyle={{width: 180}}
+                labelStyle={{width: isMobile ? 118 : 180}}
                 className="retro-descriptions"
                 style={{wordBreak: "break-word", marginTop: 12}}
             >

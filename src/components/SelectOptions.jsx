@@ -1,4 +1,5 @@
 import { Select } from "antd";
+import {CloseCircleFilled} from "@ant-design/icons";
 
 export default function SelectOptions({
   placeholder,
@@ -16,9 +17,7 @@ export default function SelectOptions({
       <Select
         className="retro-select"
           allowClear={{
-            clearIcon: <div style={{color: "red", cursor: "pointer", position: "absolute", right: 10, height: 32}}>
-              очистити
-            </div>,
+            clearIcon: <CloseCircleFilled className="select-clear-icon" aria-label="Очистити" />,
           }}
         placeholder={placeholder}
         value={value}

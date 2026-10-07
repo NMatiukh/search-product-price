@@ -7,8 +7,13 @@
 export function cleanAndDecodeXml(text) {
     if (!text) return text;
 
-    // 1. Прибрати нелегальні керівні символи (окрім \t \n \r)
-    text = text.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F-\u0084\u0086-\u009F]/g, "");
+    // 1. Прибрати нелегальні керівні символи (окрім \t \n \r та NEL)
+    text = Array.from(text).filter((char) => {
+        const code = char.codePointAt(0);
+        const isC0Control = code <= 0x1F && code !== 0x09 && code !== 0x0A && code !== 0x0D;
+        const isDisallowedC1Control = code >= 0x7F && code <= 0x9F && code !== 0x85;
+        return !isC0Control && !isDisallowedC1Control;
+    }).join("");
 
     // 2. Екранувати "сирі" &, які не починають сутність
     text = text.replace(/&(?!#\d+;|#x[0-9a-fA-F]+;|[a-zA-Z][\w.-]*;)/g, "&amp;");
