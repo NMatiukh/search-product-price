@@ -30,9 +30,15 @@ export default function App() {
     const isMobile = !screens.md;
 
     const [activeDiscount, setActiveDiscount] = useState(0);
-    const [searchValue, setSearchValue] = useState();
+    const [inputValue, setInputValue] = useState("");
+    const [searchValue, setSearchValue] = useState("");
     const [rows, setRows] = useState([]);
     const [makerFilter, setMakerFilter] = useState();
+
+    useEffect(() => {
+        const timer = setTimeout(() => setSearchValue(inputValue), 300);
+        return () => clearTimeout(timer);
+    }, [inputValue]);
     // for loading
     const [visibleCount, setVisibleCount] = useState(20);
 
@@ -272,7 +278,7 @@ export default function App() {
             <section className="control-panel" aria-label="Пошук і фільтри">
                 <div className="section-label"><span>01</span> Пошук і фільтри</div>
                 <div className="search-row">
-                    <SearchBar onSearch={setSearchValue} isMobile={isMobile}/>
+                    <SearchBar onSearch={setInputValue} isMobile={isMobile}/>
                 </div>
                 <Flex className="filter-row" gap={10} align="center" wrap>
 
@@ -282,13 +288,14 @@ export default function App() {
                     onChangeSetter={(v) => setActiveDiscount(v || 0)}
                     isMobile={isMobile}
                     value={activeDiscount || undefined}
+                    style={!isMobile ? {width: 160} : {}}
                 />
                 <SelectOptions
                     placeholder="Фільтр: виробник"
                     isOptions={makerOptions}
                     value={makerFilter}
                     onChangeSetter={(v) => setMakerFilter(v || undefined)}
-                    style={{width: !isMobile && 240}}
+                    style={!isMobile ? {width: 240} : {}}
                     isMobile={isMobile}
                     showSearch
                     optionFilterProp="label"

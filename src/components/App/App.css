@@ -54,7 +54,7 @@ html, body, #root { min-height: 100%; }
 .filter-row > .retro-select { width: auto !important; min-width: 200px; }
 .filter-row > .retro-select:nth-of-type(2) { flex: 1 1 260px; }
 
-.retro-select .ant-select-selector, .currency-input.ant-input-number { min-height: 46px !important; background: #fff !important; border: 2px solid var(--ink) !important; border-radius: 0 !important; box-shadow: 3px 3px 0 var(--ink) !important; }
+.retro-select .ant-select-selector, .currency-input.ant-input-number { min-height: 46px !important; background: #fff !important; border: 2px solid var(--ink) !important; border-radius: 0 !important; box-shadow: 3px 3px 0 var(--ink) !important; cursor: pointer !important; }
 .retro-select .ant-select-selection-item, .retro-select .ant-select-selection-placeholder { line-height: 42px !important; font-weight: 600; }
 .retro-select.ant-select-focused .ant-select-selector, .currency-input.ant-input-number-focused { border-color: var(--ink) !important; box-shadow: 3px 3px 0 var(--primary) !important; }
 .select-clear-icon { color: var(--pink); font-size: 16px; }
@@ -66,7 +66,7 @@ html, body, #root { min-height: 100%; }
 .currency-block { min-height: 50px; padding: 7px 9px; background: var(--yellow); border: 2px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); }
 .currency-code { color: var(--ink) !important; font-size: 12px; font-weight: 800; }
 .currency-input .ant-input-number-input { font-weight: 700; }
-.product-count { padding: 10px 12px; color: var(--ink) !important; background: var(--mint); border: 2px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); font-size: 11px; font-weight: 800; white-space: nowrap; }
+.product-count { padding: 10px 12px; color: var(--ink) !important; background: var(--mint); border: 2px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); font-size: 11px; font-weight: 800; white-space: nowrap; width: 240px; text-align: center; }
 
 .results-panel { padding: 22px 22px 0; }
 .table-scroll { height: min(58vh, 650px); overflow-y: auto; scrollbar-color: var(--primary) var(--yellow); }
