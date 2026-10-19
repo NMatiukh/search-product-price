@@ -16,14 +16,11 @@ import ProductInfo from "../ProductInfo";
 import ModalWindow from "../ModalWindow";
 import TableColumns from "../TableColumns";
 import {cleanAndDecodeXml} from "../../services/cleanAndDecodeXml.js";
-import priceListPrices from "../../data/priceListPrices.json";
 
 const {useBreakpoint} = Grid;
 // Статичні курси валюти (без localStorage)
 const USD_RATE = 45.1; // 1 USD = 45.1 UAH
 const EUR_RATE = 50.8; // 1 EUR = 50.8 UAH
-const normalizeArticle = (value) =>
-    String(value ?? "").trim().replace(/[\s.]+$/g, "").toUpperCase();
 /* ---------- Компонент ---------- */
 export default function App() {
     const screens = useBreakpoint();
@@ -189,14 +186,7 @@ export default function App() {
                     );
                 const json = parseXmlToJson(text);
                 const arr = findArrayOfObjects(json) || [];
-                const mapped = arr.map((x, i) => {
-                    const product = mapProduct(x, i);
-                    const priceList =
-                        priceListPrices[normalizeArticle(product.BarCode)] ||
-                        priceListPrices[normalizeArticle(product.Code)] ||
-                        null;
-                    return {...product, PriceList: priceList};
-                });
+                const mapped = arr.map((x, i) => mapProduct(x, i));
                 setRows(mapped.map(value => ({...value, Name: cleanAndDecodeXml(value.Name)})));
                 // setRows(mapped);
             } catch (e) {

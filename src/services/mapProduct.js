@@ -23,6 +23,10 @@ export function mapProduct(item, idx) {
     return {
         key: idx,
         Amount: toNum(item.Amount),
+        AmountWawska: toNum(item.AmountWawska),
+        AmountLych: toNum(item.AmountLych),
+        AmountSilmash: toNum(item.AmountSilmash),
+        AmountVystavka: toNum(item.AmountVystavka),
         BarCode: asText(item.BarCode) || "",
         BlackFriday: toBool(item.BlackFriday),
         Code: asText(item.Code) || "",

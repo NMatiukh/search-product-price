@@ -45,21 +45,22 @@ export default function ModalContent({
     const actPrice = selected?.ActPrice ?? null;
     const whPrice = typeof selected?.WhPrice === "number" ? selected.WhPrice : null;
     const cur = selected?.PriceCurrency || "UAH";
-    const exactPrices = selected?.PriceList ?? null;
-    const priceRow = (group, fallback) => {
-        const exact = exactPrices?.[group];
-        if (exact) {
-            return {euro: exact.eur, dollar: exact.usd, uah: exact.uah};
-        }
+    const priceRow = (fallback) => {
         return {
             euro: convert(fallback, cur, "EUR"),
             dollar: convert(fallback, cur, "USD"),
             uah: convert(fallback, cur, "UAH"),
         };
     };
-    const retail = priceRow("retail", price);
-    const promo = priceRow("promo", actPrice);
-    const wholesale = priceRow("wholesale", whPrice);
+    const retail = priceRow(price);
+    const promo = priceRow(actPrice);
+    const wholesale = priceRow(whPrice);
+    const warehouseStocks = [
+        ["Варшавська", selected?.AmountWawska],
+        ["Личаківська", selected?.AmountLych],
+        ["Сільмаш", selected?.AmountSilmash],
+        ["Виставка", selected?.AmountVystavka],
+    ];
     const retailUah = retail.uah;
     const wholesaleUah = wholesale.uah;
     const wholesaleMarkupPercent =
@@ -185,6 +186,22 @@ export default function ModalContent({
                 </Descriptions.Item>
                 <Descriptions.Item label="Кількість" className={'test-class-name'}>
                     <SecureValue style={{width: 'inherit', display: "block"}} value={selected.Amount ?? "—"}/>
+                </Descriptions.Item>
+                <Descriptions.Item label="По складах" span={isMobile ? 1 : 2}>
+                    <SecureValue
+                        align="left"
+                        style={{width: "100%", display: "block", padding: 0}}
+                        value={
+                            <span className="warehouse-stock">
+                                {warehouseStocks.map(([name, amount]) => (
+                                    <span className="warehouse-stock__item" key={name}>
+                                        <span>{name}</span>
+                                        <strong>{amount ?? 0}</strong>
+                                    </span>
+                                ))}
+                            </span>
+                        }
+                    />
                 </Descriptions.Item>
                 <Descriptions.Item label="Застарілий">
                     {selected.Obsolete ? <Tag color="red">Так</Tag> : <Tag>Ні</Tag>}

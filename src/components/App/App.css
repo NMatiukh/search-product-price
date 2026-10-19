@@ -100,6 +100,9 @@ mark { padding: 1px 3px; color: var(--ink); background: var(--yellow); border: 2
 .price-detail-table .wholesale-value.is-visible { filter: none; }
 .retro-descriptions .ant-descriptions-item-label { color: var(--ink) !important; background: var(--yellow) !important; border-color: var(--ink) !important; font-weight: 800; }
 .retro-descriptions .ant-descriptions-item-content { background: #fff !important; border-color: var(--ink) !important; }
+.warehouse-stock { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; padding: 8px; }
+.warehouse-stock__item { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 9px; background: #eefaff; border: 2px solid var(--ink); font-size: 12px; font-weight: 700; }
+.warehouse-stock__item strong { min-width: 24px; padding: 2px 6px; color: #fff; background: var(--primary); border: 2px solid var(--ink); text-align: center; }
 .retro-modal .ant-divider { border-color: var(--ink); border-width: 2px; }
 .retro-modal .ant-tag { color: var(--ink); background: var(--mint); border: 2px solid var(--ink); border-radius: 0; font-weight: 700; }
 
@@ -131,6 +134,7 @@ mark { padding: 1px 3px; color: var(--ink); background: var(--yellow); border: 2
     .retro-modal .ant-modal-content { padding: 16px 10px; border-width: 3px; box-shadow: 6px 6px 0 var(--primary); }
     .retro-modal .ant-modal-title { font-size: 20px; line-height: 1.2; }
     .retro-modal .ant-modal-close { top: 12px; right: 10px; }
+    .warehouse-stock { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 520px) {

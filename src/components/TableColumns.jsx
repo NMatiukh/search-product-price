@@ -38,11 +38,8 @@ export default function TableColumns({
                 align: "right",
                 width: 120,
                 render: (val, record) => {
-                    const exactUah = record?.PriceList?.retail?.uah;
                     const amount = typeof val === "number" ? val : Number(val);
-                    const uah = typeof exactUah === "number"
-                        ? exactUah
-                        : toUAH?.(amount, record?.PriceCurrency || "UAH");
+                    const uah = toUAH?.(amount, record?.PriceCurrency || "UAH");
                     return uah != null && Number.isFinite(uah)
                         ? new Intl.NumberFormat("uk-UA", {
                             style: "currency",
