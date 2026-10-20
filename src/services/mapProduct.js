@@ -19,6 +19,8 @@ export function mapProduct(item, idx) {
         asText(item.ManufacturerName) ||
         asText(item["МanufacturerName"]) ||
         "Виробника немає";
+    const actUahPrice = toOptionalNum(item.ActUAHPrice);
+    const hasActUahPrice = actUahPrice !== null;
 
     return {
         key: idx,
@@ -32,8 +34,10 @@ export function mapProduct(item, idx) {
         Code: asText(item.Code) || "",
         Name: asText(item.Name) || "",
         Obsolete: toBool(item.Obsolete),
-        Price: toNum(item.Price),
-        PriceCurrency: asText(item.PriceCurrency) || "",
+        // Якщо 1С передає окрему актуальну ціну в гривнях, вона має
+        // пріоритет над базовою ціною та її валютою.
+        Price: hasActUahPrice ? actUahPrice : toNum(item.Price),
+        PriceCurrency: hasActUahPrice ? "UAH" : asText(item.PriceCurrency) || "",
         ManufacturerName: manufacturer,           // <-- завжди рядок, з плейсхолдером
         // У новіших XML поле гуртової ціни може бути повністю відсутнім.
         WhPrice: toOptionalNum(item.WhPrice),
