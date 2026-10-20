@@ -6,20 +6,20 @@ export default function TableColumns({
                                          displayRows,
                                          setSelected,
                                          setOpenModal,
-                                         // isMobile,
+                                         isMobile,
                                          highlightTokens,
                                          toUAH, // ⬅️ додали
                                      }) {
     const columns = useMemo(
         () => [
             {
-                title: "Артикул",
+                title: isMobile ? "Арт." : "Артикул",
                 dataIndex: "BarCode",
                 key: "BarCode",
-                ellipsis: true,
+                ellipsis: !isMobile,
                 render: (val) =>
                     highlightText(typeof val === "string" ? val : "", highlightTokens),
-                width: 160,
+                width: isMobile ? 78 : 160,
             },
             {
                 title: "Назва",
@@ -32,26 +32,25 @@ export default function TableColumns({
                 ),
             },
             {
-                title: "Ціна (грн)",
+                title: isMobile ? "Ціна, грн" : "Ціна (грн)",
                 dataIndex: "Price",
                 key: "PriceUAH",
                 align: "right",
-                width: 120,
+                width: isMobile ? 96 : 120,
                 render: (val, record) => {
                     const amount = typeof val === "number" ? val : Number(val);
                     const uah = toUAH?.(amount, record?.PriceCurrency || "UAH");
-                    return uah != null && Number.isFinite(uah)
-                        ? new Intl.NumberFormat("uk-UA", {
-                            style: "currency",
-                            currency: "UAH",
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                        }).format(uah)
-                        : "—";
+                    if (uah == null || !Number.isFinite(uah)) return "—";
+
+                    return new Intl.NumberFormat("uk-UA", {
+                        ...(isMobile ? {} : {style: "currency", currency: "UAH"}),
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    }).format(uah);
                 },
             },
         ],
-        [highlightTokens, toUAH]
+        [highlightTokens, isMobile, toUAH]
     );
 
     return (
@@ -74,7 +73,7 @@ export default function TableColumns({
                             : undefined,
                 },
             })}
-            scroll={{ x: 620 }}
+            scroll={isMobile ? undefined : {x: 620}}
             tableLayout="fixed"
             sticky
             // pagination={{
@@ -84,7 +83,7 @@ export default function TableColumns({
             // }}
             pagination={false}
             className="catalog-table"
-            style={{ width: "100%", fontSize: 12 }}
+            style={{width: "100%", fontSize: isMobile ? 11 : 12}}
         />
     );
 }

@@ -247,24 +247,6 @@ export default function App() {
 
     return (
         <main className="app-shell">
-            <header className="catalog-header">
-                <div className="catalog-kicker">
-                    <span>ПРАЙС-КАТАЛОГ</span>
-                    <span>PREMIER DENTAL</span>
-                </div>
-                <div className="catalog-title-row">
-                    <div>
-                        <p className="catalog-eyebrow">Швидкий пошук товарів</p>
-                        <h1>Пошук цін</h1>
-                    </div>
-                    <div className="catalog-stamp" aria-label="Актуальний каталог">
-                        <span>АКТУАЛЬНО</span>
-                        <strong>2026</strong>
-                    </div>
-                </div>
-                <p className="catalog-subtitle">Артикул / виробник / наявність / ціна</p>
-            </header>
-
             <section className="control-panel" aria-label="Пошук і фільтри">
                 <div className="section-label"><span>01</span> Пошук і фільтри</div>
                 <div className="search-row">

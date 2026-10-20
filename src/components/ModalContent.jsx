@@ -117,9 +117,9 @@ export default function ModalContent({
     const columns = [
         {title: " ", dataIndex: "type", key: "type"},
         {
-            title: "Євро",
-            dataIndex: "euro",
-            key: "euro",
+            title: "Гривня",
+            dataIndex: "uah",
+            key: "uah",
             align: "right",
             render: (val, record) => blurIfWholesale(val, record),
         },
@@ -131,9 +131,9 @@ export default function ModalContent({
             render: (val, record) => blurIfWholesale(val, record),
         },
         {
-            title: "Гривня",
-            dataIndex: "uah",
-            key: "uah",
+            title: "Євро",
+            dataIndex: "euro",
+            key: "euro",
             align: "right",
             render: (val, record) => blurIfWholesale(val, record),
         },
