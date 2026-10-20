@@ -45,15 +45,16 @@ export default function ModalContent({
     const actPrice = selected?.ActPrice ?? null;
     const whPrice = typeof selected?.WhPrice === "number" ? selected.WhPrice : null;
     const cur = selected?.PriceCurrency || "UAH";
-    const priceRow = (fallback) => {
+    const actCur = selected?.ActPriceCurrency || cur;
+    const priceRow = (fallback, currency = cur) => {
         return {
-            euro: convert(fallback, cur, "EUR"),
-            dollar: convert(fallback, cur, "USD"),
-            uah: convert(fallback, cur, "UAH"),
+            euro: convert(fallback, currency, "EUR"),
+            dollar: convert(fallback, currency, "USD"),
+            uah: convert(fallback, currency, "UAH"),
         };
     };
     const retail = priceRow(price);
-    const promo = priceRow(actPrice);
+    const promo = priceRow(actPrice, actCur);
     const wholesale = priceRow(whPrice);
     const warehouseStocks = [
         ["Варшавська", selected?.AmountWawska],

@@ -34,13 +34,13 @@ export function mapProduct(item, idx) {
         Code: asText(item.Code) || "",
         Name: asText(item.Name) || "",
         Obsolete: toBool(item.Obsolete),
-        // Якщо 1С передає окрему актуальну ціну в гривнях, вона має
-        // пріоритет над базовою ціною та її валютою.
-        Price: hasActUahPrice ? actUahPrice : toNum(item.Price),
-        PriceCurrency: hasActUahPrice ? "UAH" : asText(item.PriceCurrency) || "",
+        Price: toNum(item.Price),
+        PriceCurrency: asText(item.PriceCurrency) || "",
         ManufacturerName: manufacturer,           // <-- завжди рядок, з плейсхолдером
         // У новіших XML поле гуртової ціни може бути повністю відсутнім.
         WhPrice: toOptionalNum(item.WhPrice),
-        ActPrice: toNum(item.ActPrice),
+        // Актуальна акційна ціна з 1С передається окремо в гривнях.
+        ActPrice: hasActUahPrice ? actUahPrice : toOptionalNum(item.ActPrice),
+        ActPriceCurrency: hasActUahPrice ? "UAH" : asText(item.PriceCurrency) || "",
     };
 }
