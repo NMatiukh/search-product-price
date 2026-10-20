@@ -32,7 +32,7 @@ export default function TableColumns({
                 ),
             },
             {
-                title: isMobile ? "Ціна, грн" : "Ціна (грн)",
+                title: isMobile ? "Ціна, ₴" : "Ціна (₴)",
                 dataIndex: "Price",
                 key: "PriceUAH",
                 align: "right",
@@ -42,11 +42,11 @@ export default function TableColumns({
                     const uah = toUAH?.(amount, record?.PriceCurrency || "UAH");
                     if (uah == null || !Number.isFinite(uah)) return "—";
 
-                    return new Intl.NumberFormat("uk-UA", {
-                        ...(isMobile ? {} : {style: "currency", currency: "UAH"}),
+                    const formatted = new Intl.NumberFormat("uk-UA", {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                     }).format(uah);
+                    return isMobile ? formatted : `${formatted} ₴`;
                 },
             },
         ],

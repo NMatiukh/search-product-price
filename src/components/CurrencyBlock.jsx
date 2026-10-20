@@ -5,13 +5,13 @@ export default function CurrencyBlock({ valueRate, onChangeSetter, isMobile }) {
   return (
     <Flex className="currency-block" align="center" gap={6} style={{ flexWrap: "wrap" }}>
       <CurrencyInput
-        title="USD"
+        title="$"
         currencyRate={valueRate.usdRate}
         onChangeSetter={onChangeSetter.setUsdRate}
         isMobile={isMobile}
       />
       <CurrencyInput
-        title="EUR"
+        title="€"
         currencyRate={valueRate.eurRate}
         onChangeSetter={onChangeSetter.setEurRate}
         isMobile={isMobile}

@@ -10,7 +10,7 @@ export default function CurrencyInput({title, currencyRate, onChangeSetter, isMo
         min={0}
         value={currencyRate}
         onChange={(v) => onChangeSetter(Number(v) || 0)}
-        placeholder="грн"
+        placeholder="₴"
         size={isMobile ? "middle" : "large"}
         className="currency-input"
         style={{ width: 100 }}
