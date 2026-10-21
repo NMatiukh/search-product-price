@@ -19,8 +19,8 @@ import {cleanAndDecodeXml} from "../../services/cleanAndDecodeXml.js";
 
 const {useBreakpoint} = Grid;
 // Статичні курси валюти (без localStorage)
-const USD_RATE = 45.1; // 1 USD = 45.1 UAH
-const EUR_RATE = 50.8; // 1 EUR = 50.8 UAH
+const USD_RATE = 45.3; // 1 USD = 45.3 UAH
+const EUR_RATE = 51.1; // 1 EUR = 51.1 UAH
 /* ---------- Компонент ---------- */
 export default function App() {
     const screens = useBreakpoint();
